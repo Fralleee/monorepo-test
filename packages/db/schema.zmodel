@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
@@ -7,32 +7,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
-plugin hooks {
-  provider = '@zenstackhq/tanstack-query'
-  target = 'react'
-  output = './src/generated/hooks'
+// Virtual auth type - NOT stored in database
+// Represents the session context from SlashID
+type Auth {
+  id String @id
+  role String
+  @@auth
 }
 
-// Abstract model for common auth context
-// Note: No User model - identity comes from SlashID session
-abstract model BaseModel {
-  // All authenticated users can read
-  @@allow('read', auth() != null)
-
-  // Only ADMIN can create, update, delete
-  @@allow('create,update,delete', auth().role == 'ADMIN')
-}
-
-model Clinic extends BaseModel {
+model Clinic {
   id                  String               @id @default(cuid())
   name                String
   code                String               @unique
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   treatmentsByClinic  TreatmentsByClinic[]
+
+  // All authenticated users can read
+  @@allow('read', auth() != null)
+  // Only ADMIN can create, update, delete
+  @@allow('create,update,delete', auth().role == 'ADMIN')
 }
 
-model Treatment extends BaseModel {
+model Treatment {
   id                        String               @id @default(cuid())
   name                      String
   description               String?
@@ -41,9 +38,14 @@ model Treatment extends BaseModel {
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @updatedAt
   treatmentsByClinic        TreatmentsByClinic[]
+
+  // All authenticated users can read
+  @@allow('read', auth() != null)
+  // Only ADMIN can create, update, delete
+  @@allow('create,update,delete', auth().role == 'ADMIN')
 }
 
-model TreatmentsByClinic extends BaseModel {
+model TreatmentsByClinic {
   id            String    @id @default(cuid())
   clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   clinicId      String
@@ -56,6 +58,10 @@ model TreatmentsByClinic extends BaseModel {
 
   @@unique([clinicId, treatmentId])
 
+  // All authenticated users can read
+  @@allow('read', auth() != null)
+  // Only ADMIN can create, update, delete
+  @@allow('create,update,delete', auth().role == 'ADMIN')
   // TODO: Add SUPPORT permissions when requirements are defined
   // @@allow('read,update', auth().role == 'SUPPORT')
 }
