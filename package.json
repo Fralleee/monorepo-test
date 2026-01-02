@@ -1,23 +1,23 @@
 {
-  "name": "@acme/monorepo",
-  "private": true,
-  "packageManager": "pnpm@9.15.1",
-  "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "typecheck": "turbo typecheck",
-    "lint": "turbo lint",
-    "format": "turbo format",
-    "db:generate": "turbo db:generate",
-    "db:migrate": "turbo db:migrate",
-    "db:push": "turbo db:push",
-    "clean": "turbo clean && rm -rf node_modules",
-    "check:unused": "pnpm run check:unused:ci && knip"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "knip": "^5.73.4",
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.2"
-  }
+	"name": "@acme/monorepo",
+	"private": true,
+	"packageManager": "pnpm@9.15.1",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"typecheck": "turbo typecheck",
+		"lint": "turbo lint",
+		"format": "turbo format",
+		"db:generate": "turbo db:generate",
+		"db:migrate": "turbo db:migrate",
+		"db:push": "turbo db:push",
+		"clean": "turbo clean && rm -rf node_modules",
+		"check:unused": "pnpm run check:unused:ci && knip"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.8",
+		"knip": "^5.73.4",
+		"turbo": "^2.3.3",
+		"typescript": "^5.7.2"
+	}
 }

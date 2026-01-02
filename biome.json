@@ -1,71 +1,47 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "files": {
-    "ignoreUnknown": false,
-    "ignore": [
-      "**/node_modules",
-      "**/coverage",
-      "**/generated",
-      "**/.claude",
-      "**/.next",
-      "**/.turbo",
-      "**/dist",
-      "**/test-results",
-      "**/*.code-workspace",
-      "**/public/firebase*.js",
-      "**/mockServiceWorker.js",
-      ".vscode/settings.json",
-      "**/prisma/*.prisma"
-    ]
-  },
-  "formatter": {
-    "enabled": true,
-    "useEditorconfig": true,
-    "lineWidth": 120
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "style": {
-        "useNodejsImportProtocol": "off"
-      },
-      "correctness": {
-        "noUnknownMediaFeatureName": "off",
-        "useExhaustiveDependencies": "off"
-      },
-      "suspicious": {
-        "noEmptyBlock": "off",
-        "noExplicitAny": "off",
-        "noArrayIndexKey": "off",
-        "noConsole": "error",
-        "useAwait": "error"
-      },
-      "complexity": {
-        "useLiteralKeys": "off"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "off"
-      }
-    }
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "semicolons": "asNeeded"
-    }
-  },
-  "css": {
-    "formatter": {
-      "quoteStyle": "single"
-    },
-    "parser": {
-      "cssModules": true
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": ["**"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 4,
+		"lineWidth": 120
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUnusedFunctionParameters": "error"
+			}
+		},
+		"domains": {
+			"next": "recommended",
+			"react": "recommended"
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.ts", "**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		}
+	],
+	"assist": {
+		"enabled": true,
+		"actions": { "source": { "organizeImports": "on" } }
+	}
 }
