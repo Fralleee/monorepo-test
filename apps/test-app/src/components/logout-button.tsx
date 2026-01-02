@@ -6,18 +6,18 @@ import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 
 export function LogoutButton() {
-  const { logOut } = useSlashID()
-  const router = useRouter()
-  const [pending, startTransition] = useTransition()
+	const { logOut } = useSlashID()
+	const router = useRouter()
+	const [pending, startTransition] = useTransition()
 
-  const handleLogout = async () => {
-    await logOut()
-    startTransition(() => router.replace('/login'))
-  }
+	const handleLogout = async () => {
+		await logOut()
+		startTransition(() => router.replace('/login'))
+	}
 
-  return (
-    <Button onClick={handleLogout} disabled={pending} variant="outline">
-      {pending ? 'Signing out...' : 'Sign out'}
-    </Button>
-  )
+	return (
+		<Button onClick={handleLogout} disabled={pending} variant="outline">
+			{pending ? 'Signing out...' : 'Sign out'}
+		</Button>
+	)
 }

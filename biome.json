@@ -33,34 +33,26 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useNodejsImportProtocol": "off",
-        "noDescendingSpecificity": "off"
+        "useNodejsImportProtocol": "off"
       },
       "correctness": {
         "noUnknownMediaFeatureName": "off",
-        "useExhaustiveDependencies": "off",
-        "useUniqueElementIds": "off"
+        "useExhaustiveDependencies": "off"
       },
       "suspicious": {
         "noEmptyBlock": "off",
         "noExplicitAny": "off",
         "noArrayIndexKey": "off",
-        "noUnknownAtRules": "off",
         "noConsole": "error",
         "useAwait": "error"
       },
       "complexity": {
-        "useLiteralKeys": "off",
-        "noImportantStyles": "off"
+        "useLiteralKeys": "off"
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       }
     }
-  },
-  "assist": {
-    "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
   },
   "javascript": {
     "formatter": {

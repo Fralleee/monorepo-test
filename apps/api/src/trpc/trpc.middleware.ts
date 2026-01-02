@@ -7,32 +7,32 @@ import { createDb } from '@acme/db'
 
 @Injectable()
 export class TrpcMiddleware implements NestMiddleware {
-  private middleware = createExpressMiddleware({
-    router: appRouter,
-    createContext: async ({ req }) => {
-      const cookieHeader = req.headers.cookie
-      const session = await getSessionFromCookieHeader(cookieHeader)
-      const db = createDb(session)
+	private middleware = createExpressMiddleware({
+		router: appRouter,
+		createContext: async ({ req }) => {
+			const cookieHeader = req.headers.cookie
+			const session = await getSessionFromCookieHeader(cookieHeader)
+			const db = createDb(session)
 
-      return createTRPCContext({
-        session,
-        db,
-      })
-    },
-    onError({ error, path }) {
-      // biome-ignore lint/suspicious/noConsole: Error logging
-      console.error(`tRPC error on path "${path}":`, error)
-    },
-  })
+			return createTRPCContext({
+				session,
+				db,
+			})
+		},
+		onError({ error, path }) {
+			// biome-ignore lint/suspicious/noConsole: Error logging
+			console.error(`tRPC error on path "${path}":`, error)
+		},
+	})
 
-  use(req: Request, res: Response, next: NextFunction) {
-    // Strip /trpc prefix for the tRPC middleware
-    const originalUrl = req.url
-    req.url = req.url.replace(/^\/trpc/, '') || '/'
+	use(req: Request, res: Response, next: NextFunction) {
+		// Strip /trpc prefix for the tRPC middleware
+		const originalUrl = req.url
+		req.url = req.url.replace(/^\/trpc/, '') || '/'
 
-    this.middleware(req, res, (err?: unknown) => {
-      req.url = originalUrl
-      next(err)
-    })
-  }
+		this.middleware(req, res, (err?: unknown) => {
+			req.url = originalUrl
+			next(err)
+		})
+	}
 }
