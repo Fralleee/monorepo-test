@@ -1,5 +1,5 @@
 import { Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
-import { TrpcMiddleware } from './trpc.middleware.js'
+import { TrpcMiddleware } from './trpc.middleware'
 
 @Module({})
 export class TrpcModule implements NestModule {
