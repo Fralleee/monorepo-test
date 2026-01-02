@@ -1,4 +1,4 @@
-import type { SessionConfig } from './types.js'
+import type { SessionConfig } from './types'
 
 const COOKIE_PREFIX = '@slashid/USER_TOKEN'
 

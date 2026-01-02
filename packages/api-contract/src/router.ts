@@ -1,7 +1,7 @@
-import { t } from './trpc.js'
-import { clinicRouter } from './routers/clinic.js'
-import { treatmentRouter } from './routers/treatment.js'
-import { treatmentsByClinicRouter } from './routers/treatments-by-clinic.js'
+import { t } from './trpc'
+import { clinicRouter } from './routers/clinic'
+import { treatmentRouter } from './routers/treatment'
+import { treatmentsByClinicRouter } from './routers/treatments-by-clinic'
 
 export const appRouter = t.router({
   clinic: clinicRouter,

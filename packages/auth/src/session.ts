@@ -1,6 +1,6 @@
 import { SSR } from '@slashid/slashid'
-import { getCookieName } from './config.js'
-import type { SessionUser, UserRole } from './types.js'
+import { getCookieName } from './config'
+import type { SessionUser, UserRole } from './types'
 
 function deriveRoleFromGroups(groups: string[]): UserRole {
   if (groups.includes('admin') || groups.includes('ADMIN')) {

@@ -1,6 +1,6 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
-import type { TRPCContext } from './context.js'
+import type { TRPCContext } from './context'
 import type { UserRole } from '@acme/auth'
 
 export const t = initTRPC.context<TRPCContext>().create({

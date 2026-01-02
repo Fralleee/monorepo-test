@@ -1,3 +1,3 @@
-export * from './types.js'
-export * from './session.js'
-export * from './config.js'
+export * from './types'
+export * from './session'
+export * from './config'

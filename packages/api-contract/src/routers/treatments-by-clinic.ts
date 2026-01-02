@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { t, authedProcedure, adminProcedure } from '../trpc.js'
+import { t, authedProcedure, adminProcedure } from '../trpc'
 
 export const treatmentsByClinicRouter = t.router({
   list: authedProcedure
