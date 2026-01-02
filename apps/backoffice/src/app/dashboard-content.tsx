@@ -5,26 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Building2, Syringe, Link2 } from 'lucide-react'
 
 export function DashboardContent() {
-  const { data: clinicsData } = useList({ resource: 'clinics' })
-  const { data: treatmentsData } = useList({ resource: 'treatments' })
-  const { data: treatmentsByClinicData } = useList({ resource: 'treatmentsByClinic' })
+  const { result: clinicsResult } = useList({ resource: 'clinics' })
+  const { result: treatmentsResult } = useList({ resource: 'treatments' })
+  const { result: treatmentsByClinicResult } = useList({ resource: 'treatmentsByClinic' })
 
   const stats = [
     {
       title: 'Clinics',
-      value: clinicsData?.total ?? 0,
+      value: clinicsResult?.total ?? 0,
       icon: Building2,
       description: 'Total registered clinics',
     },
     {
       title: 'Treatments',
-      value: treatmentsData?.total ?? 0,
+      value: treatmentsResult?.total ?? 0,
       icon: Syringe,
       description: 'Available treatments',
     },
     {
       title: 'Clinic Treatments',
-      value: treatmentsByClinicData?.total ?? 0,
+      value: treatmentsByClinicResult?.total ?? 0,
       icon: Link2,
       description: 'Treatment-clinic assignments',
     },

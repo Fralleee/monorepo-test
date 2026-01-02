@@ -20,7 +20,9 @@ type TreatmentByClinic = {
 }
 
 export function TreatmentsByClinicListContent() {
-  const { data, isLoading, refetch } = useList<TreatmentByClinic>({ resource: 'treatmentsByClinic' })
+  const { result, query } = useList<TreatmentByClinic>({ resource: 'treatmentsByClinic' })
+  const { isLoading, refetch } = query
+  const items = result.data
   const { mutate: deleteItem } = useDelete()
 
   const handleDelete = (id: string) => {
@@ -56,7 +58,7 @@ export function TreatmentsByClinicListContent() {
         <CardContent>
           {isLoading ? (
             <p className="text-muted-foreground">Loading...</p>
-          ) : !data?.data.length ? (
+          ) : !items?.length ? (
             <p className="text-muted-foreground">No treatment assignments found</p>
           ) : (
             <Table>
@@ -71,7 +73,7 @@ export function TreatmentsByClinicListContent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.data.map((item) => (
+                {items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">
                       {item.clinic.name}

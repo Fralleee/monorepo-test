@@ -2,9 +2,9 @@ import type { DataProvider } from '@refinedev/core'
 import { trpcClient } from './trpc'
 
 // Custom data provider that wraps tRPC calls for Refine
+// Using 'as any' assertions to satisfy generic type constraints
 export const dataProvider: DataProvider = {
-  getList: async ({ resource, pagination, filters, sorters }) => {
-    // Map resource names to tRPC router methods
+  getList: async ({ resource }) => {
     const resourceMap: Record<string, () => Promise<unknown[]>> = {
       clinics: () => trpcClient.clinic.list.query(),
       treatments: () => trpcClient.treatment.list.query(),
@@ -19,8 +19,8 @@ export const dataProvider: DataProvider = {
     const data = await fetcher()
 
     return {
-      data: data as Record<string, unknown>[],
-      total: (data as unknown[]).length,
+      data: data as any[],
+      total: data.length,
     }
   },
 
@@ -39,7 +39,7 @@ export const dataProvider: DataProvider = {
     const data = await fetcher(id as string)
 
     return {
-      data: data as Record<string, unknown>,
+      data: data as any,
     }
   },
 
@@ -64,7 +64,7 @@ export const dataProvider: DataProvider = {
     const data = await creator(variables as Record<string, unknown>)
 
     return {
-      data: data as Record<string, unknown>,
+      data: data as any,
     }
   },
 
@@ -98,7 +98,7 @@ export const dataProvider: DataProvider = {
     const data = await updater(id as string, variables as Record<string, unknown>)
 
     return {
-      data: data as Record<string, unknown>,
+      data: data as any,
     }
   },
 
@@ -117,7 +117,7 @@ export const dataProvider: DataProvider = {
     const data = await deleter(id as string)
 
     return {
-      data: data as Record<string, unknown>,
+      data: data as any,
     }
   },
 
@@ -127,28 +127,28 @@ export const dataProvider: DataProvider = {
   getMany: async ({ resource, ids }) => {
     const results = await Promise.all(ids.map((id) => dataProvider.getOne({ resource, id })))
     return {
-      data: results.map((r) => r.data),
+      data: results.map((r) => r.data) as any[],
     }
   },
 
   createMany: async ({ resource, variables }) => {
     const results = await Promise.all(variables.map((vars) => dataProvider.create({ resource, variables: vars })))
     return {
-      data: results.map((r) => r.data),
+      data: results.map((r) => r.data) as any[],
     }
   },
 
   updateMany: async ({ resource, ids, variables }) => {
     const results = await Promise.all(ids.map((id) => dataProvider.update({ resource, id, variables })))
     return {
-      data: results.map((r) => r.data),
+      data: results.map((r) => r.data) as any[],
     }
   },
 
   deleteMany: async ({ resource, ids }) => {
     const results = await Promise.all(ids.map((id) => dataProvider.deleteOne({ resource, id })))
     return {
-      data: results.map((r) => r.data),
+      data: results.map((r) => r.data) as any[],
     }
   },
 

@@ -16,7 +16,13 @@
       "Bash(git checkout:*)",
       "Bash(pnpm --filter @acme/backoffice typecheck:*)",
       "Bash(git stash:*)",
-      "Bash(pnpm --filter @acme/db typecheck:*)"
+      "Bash(pnpm --filter @acme/db typecheck:*)",
+      "Bash(cat:*)",
+      "Bash(xargs cat:*)",
+      "Bash(npm view:*)",
+      "Bash(npx @refinedev/codemod@latest refine4-to-refine5:*)",
+      "Bash(pnpm --filter @acme/backoffice dev:*)",
+      "Bash(timeout //T 2 //NOBREAK)"
     ]
   }
 }

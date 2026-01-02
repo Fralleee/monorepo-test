@@ -13,10 +13,13 @@ type Treatment = { id: string; name: string; price: string | number }
 
 export function TreatmentByClinicCreateContent() {
   const router = useRouter()
-  const { mutate: createAssignment, isPending } = useCreate()
+  const { mutate: createAssignment, mutation } = useCreate()
+  const isPending = mutation.isPending
 
-  const { data: clinicsData } = useList<Clinic>({ resource: 'clinics' })
-  const { data: treatmentsData } = useList<Treatment>({ resource: 'treatments' })
+  const { result: clinicsResult } = useList<Clinic>({ resource: 'clinics' })
+  const { result: treatmentsResult } = useList<Treatment>({ resource: 'treatments' })
+  const clinics = clinicsResult?.data
+  const treatments = treatmentsResult?.data
 
   const [clinicId, setClinicId] = useState('')
   const [treatmentId, setTreatmentId] = useState('')
@@ -64,7 +67,7 @@ export function TreatmentByClinicCreateContent() {
                 required
               >
                 <option value="">Select a clinic</option>
-                {clinicsData?.data.map((clinic) => (
+                {clinics?.map((clinic) => (
                   <option key={clinic.id} value={clinic.id}>
                     {clinic.name} ({clinic.code})
                   </option>
@@ -81,7 +84,7 @@ export function TreatmentByClinicCreateContent() {
                 required
               >
                 <option value="">Select a treatment</option>
-                {treatmentsData?.data.map((treatment) => (
+                {treatments?.map((treatment) => (
                   <option key={treatment.id} value={treatment.id}>
                     {treatment.name} (${Number(treatment.price).toFixed(2)})
                   </option>

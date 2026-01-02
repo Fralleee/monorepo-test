@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 
 export function ClinicCreateContent() {
   const router = useRouter()
-  const { mutate: createClinic, isPending } = useCreate()
+  const { mutate: createClinic, mutation } = useCreate()
+  const isPending = mutation.isPending
 
   const [name, setName] = useState('')
   const [code, setCode] = useState('')

@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 
 export function TreatmentCreateContent() {
   const router = useRouter()
-  const { mutate: createTreatment, isPending } = useCreate()
+  const { mutate: createTreatment, mutation } = useCreate()
+  const isPending = mutation.isPending
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
