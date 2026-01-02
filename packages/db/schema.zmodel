@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+plugin hooks {
+  provider = '@zenstackhq/tanstack-query'
+  target = 'react'
+  output = './src/generated/hooks'
+}
+
+// Abstract model for common auth context
+// Note: No User model - identity comes from SlashID session
+abstract model BaseModel {
+  // All authenticated users can read
+  @@allow('read', auth() != null)
+
+  // Only ADMIN can create, update, delete
+  @@allow('create,update,delete', auth().role == 'ADMIN')
+}
+
+model Clinic extends BaseModel {
+  id                  String               @id @default(cuid())
+  name                String
+  code                String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  treatmentsByClinic  TreatmentsByClinic[]
+}
+
+model Treatment extends BaseModel {
+  id                        String               @id @default(cuid())
+  name                      String
+  description               String?
+  price                     Decimal              @db.Decimal(10, 2)
+  maintenanceIntervalMonths Int?
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @updatedAt
+  treatmentsByClinic        TreatmentsByClinic[]
+}
+
+model TreatmentsByClinic extends BaseModel {
+  id            String    @id @default(cuid())
+  clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId      String
+  treatment     Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+  treatmentId   String
+  priceOverride Decimal?  @db.Decimal(10, 2)
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([clinicId, treatmentId])
+
+  // TODO: Add SUPPORT permissions when requirements are defined
+  // @@allow('read,update', auth().role == 'SUPPORT')
+}

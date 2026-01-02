@@ -1,25 +1,26 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "vcs": {
-    "enabled": false,
+    "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": false
+    "useIgnoreFile": true
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": [
-      "**",
-      "!**/node_modules",
-      "!**/coverage",
-      "!**/generated",
-      "!**/.claude",
-      "!**/.next",
-      "!**/.turbo",
-      "!**/test-results",
-      "!**/*.code-workspace",
-      "!**/public/firebase*.js",
-      "!**/mockServiceWorker.js",
-      "!.vscode/settings.json"
+    "ignore": [
+      "**/node_modules",
+      "**/coverage",
+      "**/generated",
+      "**/.claude",
+      "**/.next",
+      "**/.turbo",
+      "**/dist",
+      "**/test-results",
+      "**/*.code-workspace",
+      "**/public/firebase*.js",
+      "**/mockServiceWorker.js",
+      ".vscode/settings.json",
+      "**/prisma/*.prisma"
     ]
   },
   "formatter": {
