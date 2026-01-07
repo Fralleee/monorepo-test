@@ -1,63 +1,57 @@
-import { z } from 'zod'
-import { t, authedProcedure, adminProcedure } from '../trpc'
+import { z } from "zod";
+import { adminProcedure, authedProcedure, t } from "../trpc";
 
 export const clinicRouter = t.router({
-  list: authedProcedure.query(async ({ ctx }) => {
-    return ctx.db.clinic.findMany({
-      orderBy: { name: 'asc' },
-    })
-  }),
-
-  byId: authedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.clinic.findUnique({
-        where: { id: input.id },
-      })
+    list: authedProcedure.query(async ({ ctx }) => {
+        return ctx.db.clinic.findMany({
+            orderBy: { name: "asc" },
+        });
     }),
 
-  byCode: authedProcedure
-    .input(z.object({ code: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.clinic.findUnique({
-        where: { code: input.code },
-      })
+    byId: authedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+        return ctx.db.clinic.findUnique({
+            where: { id: input.id },
+        });
     }),
 
-  create: adminProcedure
-    .input(
-      z.object({
-        name: z.string().min(1),
-        code: z.string().min(1).max(20),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.clinic.create({
-        data: input,
-      })
+    byCode: authedProcedure.input(z.object({ code: z.string() })).query(async ({ ctx, input }) => {
+        return ctx.db.clinic.findUnique({
+            where: { code: input.code },
+        });
     }),
 
-  update: adminProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        name: z.string().min(1).optional(),
-        code: z.string().min(1).max(20).optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input
-      return ctx.db.clinic.update({
-        where: { id },
-        data,
-      })
-    }),
+    create: adminProcedure
+        .input(
+            z.object({
+                name: z.string().min(1),
+                code: z.string().min(1).max(20),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            return ctx.db.clinic.create({
+                data: input,
+            });
+        }),
 
-  delete: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.clinic.delete({
-        where: { id: input.id },
-      })
+    update: adminProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                name: z.string().min(1).optional(),
+                code: z.string().min(1).max(20).optional(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { id, ...data } = input;
+            return ctx.db.clinic.update({
+                where: { id },
+                data,
+            });
+        }),
+
+    delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+        return ctx.db.clinic.delete({
+            where: { id: input.id },
+        });
     }),
-})
+});

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { DataProvider } from "@refinedev/core";
 import { trpcClient } from "./trpc";
 
@@ -20,6 +19,7 @@ export const dataProvider: DataProvider = {
         const data = await fetcher();
 
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: data as any,
             total: data.length,
         };
@@ -40,6 +40,7 @@ export const dataProvider: DataProvider = {
         const data = await fetcher(id as string);
 
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: data as any,
         };
     },
@@ -65,6 +66,7 @@ export const dataProvider: DataProvider = {
         const data = await creator(variables as Record<string, unknown>);
 
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: data as any,
         };
     },
@@ -99,6 +101,7 @@ export const dataProvider: DataProvider = {
         const data = await updater(id as string, variables as Record<string, unknown>);
 
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: data as any,
         };
     },
@@ -118,6 +121,7 @@ export const dataProvider: DataProvider = {
         const data = await deleter(id as string);
 
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: data as any,
         };
     },
@@ -127,6 +131,7 @@ export const dataProvider: DataProvider = {
     getMany: async ({ resource, ids }) => {
         const results = await Promise.all(ids.map((id) => dataProvider.getOne({ resource, id })));
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: results.map((r) => r.data) as any,
         };
     },
@@ -134,6 +139,7 @@ export const dataProvider: DataProvider = {
     createMany: async ({ resource, variables }) => {
         const results = await Promise.all(variables.map((vars) => dataProvider.create({ resource, variables: vars })));
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: results.map((r) => r.data) as any,
         };
     },
@@ -141,6 +147,7 @@ export const dataProvider: DataProvider = {
     updateMany: async ({ resource, ids, variables }) => {
         const results = await Promise.all(ids.map((id) => dataProvider.update({ resource, id, variables })));
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: results.map((r) => r.data) as any,
         };
     },
@@ -148,6 +155,7 @@ export const dataProvider: DataProvider = {
     deleteMany: async ({ resource, ids }) => {
         const results = await Promise.all(ids.map((id) => dataProvider.deleteOne({ resource, id })));
         return {
+            // biome-ignore lint/suspicious/noExplicitAny: Refine DataProvider requires any for generic type compatibility
             data: results.map((r) => r.data) as any,
         };
     },

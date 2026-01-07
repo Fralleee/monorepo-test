@@ -1,12 +1,12 @@
 "use client";
 
 import "@slashid/react/style.css";
+import { ClinicProvider } from "@/context/clinic-context";
+import { trpc, trpcClient } from "@/lib/trpc";
 import { SlashIDProvider } from "@slashid/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { ClinicProvider } from "@/context/clinic-context";
-import { trpc, trpcClient } from "@/lib/trpc";
 
 type ProvidersProps = {
     children: ReactNode;

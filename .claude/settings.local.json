@@ -30,7 +30,13 @@
       "Bash(dir:*)",
       "Bash(pnpm --filter @acme/test-app add @radix-ui/react-select)",
       "Bash(pnpm db:generate:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(pnpm --filter @acme/api-contract biome check:*)",
+      "Bash(pnpm --filter @acme/api biome check:*)",
+      "Bash(pnpm --filter @acme/backoffice biome check:*)",
+      "Bash(pnpm --filter @acme/test-app biome check:*)",
+      "Bash(npx biome check --fix --unsafe .)",
+      "Bash(pnpm biome check:*)"
     ]
   }
 }

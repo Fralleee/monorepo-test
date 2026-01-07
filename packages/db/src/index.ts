@@ -1,30 +1,30 @@
-import { PrismaClient } from '@prisma/client'
-import { enhance, type Enhanced } from './generated/enhance'
-import type { SessionUser } from '@acme/auth'
+import type { SessionUser } from "@acme/auth";
+import { PrismaClient } from "@prisma/client";
+import { type Enhanced, enhance } from "./generated/enhance";
 
-export { Prisma } from '@prisma/client'
-export type { Clinic, Treatment, TreatmentsByClinic } from '@prisma/client'
+export { Prisma } from "@prisma/client";
+export type { Clinic, Treatment, TreatmentsByClinic } from "@prisma/client";
 
 // Global prisma instance for connection pooling
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
+    prisma: PrismaClient | undefined;
+};
 
 export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
+    globalForPrisma.prisma ??
+    new PrismaClient({
+        log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    });
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = prisma;
 }
 
 // ZenStack auth context type
 type AuthContext = {
-  id: string
-  role: string
-}
+    id: string;
+    role: string;
+};
 
 /**
  * Creates a ZenStack-enhanced Prisma client with access control based on session
@@ -32,14 +32,14 @@ type AuthContext = {
  * @returns Enhanced Prisma client with row-level security
  */
 export function createDb(session: SessionUser | null) {
-  const authContext: AuthContext | undefined = session
-    ? {
-        id: session.id,
-        role: session.role,
-      }
-    : undefined
+    const authContext: AuthContext | undefined = session
+        ? {
+              id: session.id,
+              role: session.role,
+          }
+        : undefined;
 
-  return enhance(prisma, { user: authContext })
+    return enhance(prisma, { user: authContext });
 }
 
-export type EnhancedPrismaClient = Enhanced<PrismaClient>
+export type EnhancedPrismaClient = Enhanced<PrismaClient>;

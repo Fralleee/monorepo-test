@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { Header } from "@/components/header";
 import { getTokenFromCookies } from "@/lib/auth";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Providers } from "./providers";
 import "./globals.css";
 

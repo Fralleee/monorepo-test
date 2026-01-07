@@ -49,10 +49,7 @@ export function TreatmentsDisplay() {
         data: clinicTreatments,
         isLoading: clinicTreatmentsLoading,
         error: clinicTreatmentsError,
-    } = trpc.treatmentsByClinic.list.useQuery(
-        { clinicId: selectedClinicId ?? "" },
-        { enabled: !!selectedClinicId },
-    );
+    } = trpc.treatmentsByClinic.list.useQuery({ clinicId: selectedClinicId ?? "" }, { enabled: !!selectedClinicId });
 
     const isLoading = selectedClinicId ? clinicTreatmentsLoading : treatmentsLoading;
     const error = selectedClinicId ? clinicTreatmentsError : treatmentsError;
@@ -82,7 +79,9 @@ export function TreatmentsDisplay() {
                         {treatments.map((treatment) => (
                             <li key={treatment.id} className="rounded border p-2 text-sm">
                                 <span className="font-medium">{treatment.name}</span>
-                                <span className="ml-2 text-muted-foreground">${Number(treatment.price).toFixed(2)}</span>
+                                <span className="ml-2 text-muted-foreground">
+                                    ${Number(treatment.price).toFixed(2)}
+                                </span>
                                 {treatment.description && (
                                     <p className="mt-1 text-xs text-muted-foreground">{treatment.description}</p>
                                 )}
@@ -106,7 +105,11 @@ export function TreatmentsDisplay() {
                                     <div className="flex items-center justify-between">
                                         <span className="font-medium">{ct.treatment.name}</span>
                                         <div className="text-right">
-                                            <span className={hasOverride ? "font-medium text-green-600" : "text-muted-foreground"}>
+                                            <span
+                                                className={
+                                                    hasOverride ? "font-medium text-green-600" : "text-muted-foreground"
+                                                }
+                                            >
                                                 ${Number(effectivePrice).toFixed(2)}
                                             </span>
                                             {hasOverride && (
@@ -119,7 +122,9 @@ export function TreatmentsDisplay() {
                                     {ct.treatment.description && (
                                         <p className="mt-1 text-xs text-muted-foreground">{ct.treatment.description}</p>
                                     )}
-                                    {ct.notes && <p className="mt-1 text-xs italic text-muted-foreground">{ct.notes}</p>}
+                                    {ct.notes && (
+                                        <p className="mt-1 text-xs italic text-muted-foreground">{ct.notes}</p>
+                                    )}
                                 </li>
                             );
                         })}

@@ -1,9 +1,9 @@
 "use client";
 
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { useSlashID } from "@slashid/react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Button, type ButtonProps } from "@/components/ui/button";
 
 type LogoutButtonProps = Pick<ButtonProps, "variant" | "size">;
 

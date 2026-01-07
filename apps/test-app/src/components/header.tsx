@@ -1,12 +1,12 @@
 "use client";
 
-import { useSlashID } from "@slashid/react";
-import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useClinic } from "@/context/clinic-context";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { trpc } from "@/lib/trpc";
+import { useSlashID } from "@slashid/react";
+import Link from "next/link";
 
 export function Header() {
     const { isAuthenticated } = useSlashID();

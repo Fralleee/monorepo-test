@@ -7,7 +7,8 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**"]
+		"include": ["**"],
+		"ignore": ["**/src/generated/**", "**/prisma/**"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -22,15 +23,11 @@
 			"correctness": {
 				"noUnusedFunctionParameters": "error"
 			}
-		},
-		"domains": {
-			"next": "recommended",
-			"react": "recommended"
 		}
 	},
 	"overrides": [
 		{
-			"includes": ["**/*.test.ts", "**/*.test.tsx"],
+			"include": ["**/*.test.ts", "**/*.test.tsx"],
 			"linter": {
 				"rules": {
 					"suspicious": {
@@ -40,8 +37,7 @@
 			}
 		}
 	],
-	"assist": {
-		"enabled": true,
-		"actions": { "source": { "organizeImports": "on" } }
+	"organizeImports": {
+		"enabled": true
 	}
 }

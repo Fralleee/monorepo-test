@@ -1,41 +1,40 @@
 {
-  "name": "@acme/db",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+    "name": "@acme/db",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "default": "./src/index.ts"
+        },
+        "./generated/*": {
+            "types": "./src/generated/*",
+            "default": "./src/generated/*"
+        }
     },
-    "./generated/*": {
-      "types": "./src/generated/*",
-      "default": "./src/generated/*"
+    "scripts": {
+        "postinstall": "pnpm db:generate",
+        "db:generate": "zenstack generate --output ./src/generated && prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "db:push": "prisma db push",
+        "db:studio": "prisma studio",
+        "typecheck": "tsc --noEmit",
+        "lint": "biome check .",
+        "format": "biome format --write ."
+    },
+    "dependencies": {
+        "@acme/auth": "workspace:*",
+        "@prisma/client": "^6.1.0",
+        "@zenstackhq/runtime": "^2.10.2"
+    },
+    "devDependencies": {
+        "@acme/config": "workspace:*",
+        "@types/node": "^22.10.2",
+        "prisma": "^6.1.0",
+        "typescript": "^5.7.2",
+        "zenstack": "^2.10.2"
     }
-  },
-  "scripts": {
-    "postinstall": "pnpm db:generate",
-    "db:generate": "zenstack generate --output ./src/generated && prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:studio": "prisma studio",
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "format": "biome format --write ."
-  },
-  "dependencies": {
-    "@acme/auth": "workspace:*",
-    "@prisma/client": "^6.1.0",
-    "@zenstackhq/runtime": "^2.10.2"
-  },
-  "devDependencies": {
-    "@acme/config": "workspace:*",
-    "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.10.2",
-    "prisma": "^6.1.0",
-    "typescript": "^5.7.2",
-    "zenstack": "^2.10.2"
-  }
 }

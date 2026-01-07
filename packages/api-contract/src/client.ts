@@ -1,7 +1,7 @@
 // Client utilities for tRPC - to be used in Next.js apps
-import type { AppRouter } from './router'
+import type { AppRouter } from "./router";
 
-export type { AppRouter }
+export type { AppRouter };
 
 // Re-export for convenience
-export { createTRPCContext, type TRPCContext } from './context'
+export { createTRPCContext, type TRPCContext } from "./context";
