@@ -25,7 +25,8 @@
       "Bash(timeout //T 2 //NOBREAK)",
       "Bash(npx zenstack:*)",
       "Bash(pnpm --filter @acme/test-app typecheck:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm --filter @acme/api remove dotenv)"
     ]
   }
 }
