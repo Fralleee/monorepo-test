@@ -24,7 +24,8 @@
       "Bash(pnpm --filter @acme/backoffice dev:*)",
       "Bash(timeout //T 2 //NOBREAK)",
       "Bash(npx zenstack:*)",
-      "Bash(pnpm --filter @acme/test-app typecheck:*)"
+      "Bash(pnpm --filter @acme/test-app typecheck:*)",
+      "Bash(curl:*)"
     ]
   }
 }
