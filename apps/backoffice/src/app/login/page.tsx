@@ -1,19 +1,18 @@
-'use client'
+"use client";
 
-import { Form } from '@slashid/react'
-import type { User } from '@slashid/slashid'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Form } from "@slashid/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const redirectTo = searchParams.get('redirectTo') || '/'
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirectTo") || "/";
 
-	const handleSuccess = (_user: User) => {
-		const target = redirectTo.startsWith('/') ? redirectTo : '/'
-		router.replace(target)
-	}
+    const handleSuccess = () => {
+        const target = redirectTo.startsWith("/") ? redirectTo : "/";
+        router.replace(target);
+    };
 
 	return (
 		<main className="flex min-h-screen items-center justify-center bg-muted/30 p-8">

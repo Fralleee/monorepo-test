@@ -27,10 +27,7 @@ export const treatmentRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.treatment.create({
-        data: {
-          ...input,
-          price: input.price,
-        },
+        data: input,
       })
     }),
 

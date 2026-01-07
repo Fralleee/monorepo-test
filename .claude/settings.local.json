@@ -1,34 +1,36 @@
 {
-    "permissions": {
-        "allow": [
-            "Bash(pnpm dev:*)",
-            "Bash(pnpm typecheck:*)",
-            "Bash(pnpm install:*)",
-            "Bash(pnpm --filter @acme/api dev:*)",
-            "Bash(pnpm add:*)",
-            "Bash(pnpm --filter @acme/api add:*)",
-            "Bash(netstat:*)",
-            "Bash(findstr:*)",
-            "Bash(taskkill:*)",
-            "Bash(pnpm --filter @acme/api-contract typecheck:*)",
-            "Bash(pnpm --filter @acme/auth typecheck:*)",
-            "Bash(pnpm --filter @acme/api typecheck:*)",
-            "Bash(git checkout:*)",
-            "Bash(pnpm --filter @acme/backoffice typecheck:*)",
-            "Bash(git stash:*)",
-            "Bash(pnpm --filter @acme/db typecheck:*)",
-            "Bash(cat:*)",
-            "Bash(xargs cat:*)",
-            "Bash(npm view:*)",
-            "Bash(npx @refinedev/codemod@latest refine4-to-refine5:*)",
-            "Bash(pnpm --filter @acme/backoffice dev:*)",
-            "Bash(timeout //T 2 //NOBREAK)",
-            "Bash(npx zenstack:*)",
-            "Bash(pnpm --filter @acme/test-app typecheck:*)",
-            "Bash(curl:*)",
-            "Bash(pnpm --filter @acme/api remove dotenv)",
-            "Bash(dir:*)",
-            "Bash(pnpm --filter @acme/test-app add @radix-ui/react-select)"
-        ]
-    }
+  "permissions": {
+    "allow": [
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --filter @acme/api dev:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm --filter @acme/api add:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(pnpm --filter @acme/api-contract typecheck:*)",
+      "Bash(pnpm --filter @acme/auth typecheck:*)",
+      "Bash(pnpm --filter @acme/api typecheck:*)",
+      "Bash(git checkout:*)",
+      "Bash(pnpm --filter @acme/backoffice typecheck:*)",
+      "Bash(git stash:*)",
+      "Bash(pnpm --filter @acme/db typecheck:*)",
+      "Bash(cat:*)",
+      "Bash(xargs cat:*)",
+      "Bash(npm view:*)",
+      "Bash(npx @refinedev/codemod@latest refine4-to-refine5:*)",
+      "Bash(pnpm --filter @acme/backoffice dev:*)",
+      "Bash(timeout //T 2 //NOBREAK)",
+      "Bash(npx zenstack:*)",
+      "Bash(pnpm --filter @acme/test-app typecheck:*)",
+      "Bash(curl:*)",
+      "Bash(pnpm --filter @acme/api remove dotenv)",
+      "Bash(dir:*)",
+      "Bash(pnpm --filter @acme/test-app add @radix-ui/react-select)",
+      "Bash(pnpm db:generate:*)",
+      "Bash(git rm:*)"
+    ]
+  }
 }

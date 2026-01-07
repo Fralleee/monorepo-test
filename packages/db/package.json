@@ -16,6 +16,7 @@
     }
   },
   "scripts": {
+    "postinstall": "pnpm db:generate",
     "db:generate": "zenstack generate --output ./src/generated && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

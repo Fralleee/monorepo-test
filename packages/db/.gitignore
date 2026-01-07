@@ -1,0 +1,5 @@
+# Generated files - recreated by `pnpm db:generate`
+src/generated/
+
+# Prisma generated schema
+prisma/

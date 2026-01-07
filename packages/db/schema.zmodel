@@ -58,10 +58,6 @@ model TreatmentsByClinic {
 
   @@unique([clinicId, treatmentId])
 
-  // All authenticated users can read
   @@allow('read', auth() != null)
-  // Only ADMIN can create, update, delete
   @@allow('create,update,delete', auth().role == 'ADMIN')
-  // TODO: Add SUPPORT permissions when requirements are defined
-  // @@allow('read,update', auth().role == 'SUPPORT')
 }
