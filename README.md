@@ -45,29 +45,6 @@ monorepo/
 
 ## Framework Details
 
-### Turborepo
-
-**Why:** Manages the monorepo build pipeline with caching, parallelization, and dependency-aware task ordering. Without it, running builds across multiple packages would be slow and error-prone.
-
-**How it works in this monorepo:**
-- Defines task dependencies in `turbo.json`
-- Caches build outputs (`.next`, `dist`, `.prisma`, `src/generated`) for faster rebuilds
-- Runs independent tasks in parallel
-- Ensures `db:generate` runs before `build` and `typecheck` (critical for type safety)
-- Manages `dev` as a persistent task (watch mode)
-
-**Key configuration (`turbo.json`):**
-```json
-{
-  "tasks": {
-    "dev": { "cache": false, "persistent": true },
-    "build": { "dependsOn": ["^build", "db:generate"], "outputs": [".next/**", "dist/**"] },
-    "typecheck": { "dependsOn": ["^typecheck", "db:generate"] },
-    "db:generate": { "cache": false }
-  }
-}
-```
-
 ### tRPC
 
 **Why:** Provides end-to-end type safety between the API and frontend without code generation, manual type definitions, or REST/GraphQL complexity. Change a procedure's return type and the frontend immediately shows type errors.
@@ -105,7 +82,7 @@ const { data } = trpc.clinic.list.useQuery()  // data is Clinic[]
 1. Define models and policies in `packages/db/schema.zmodel` using `@@allow`/`@@deny`
 2. Run `zenstack generate --output ./src/generated` to create enhanced Prisma client
 3. Export `createDb(session)` from `packages/db` that wraps Prisma with ZenStack
-4. Pass session context (from SlashID) when creating the database client
+4. Pass session context when creating the database client
 5. All queries are automatically filtered by access policies
 
 **Example policy:**
@@ -130,25 +107,6 @@ type Auth {
 }
 ```
 
-### SlashID
-
-**Why:** Passwordless authentication with magic links eliminates password management complexity and improves security. No passwords means no password breaches.
-
-**How it works in this monorepo:**
-1. **Client-side**: SlashID React component renders email input form
-2. **User action**: Enters email, receives magic link via email
-3. **Authentication**: User clicks link, SlashID validates and issues JWT
-4. **Storage**: JWT stored in HTTP-only cookie (`@slashid/USER_TOKEN/{orgId}`)
-5. **Server validation**: API extracts token from cookies, validates via SlashID SSR SDK
-6. **Role mapping**: User's SlashID groups mapped to application roles
-   - `internal_users` group → `ADMIN` role
-   - Default → `USER` role
-
-**Cookie configuration:**
-- `Secure: true` in production (HTTPS only)
-- `SameSite: lax`
-- `HttpOnly: true` (set by SlashID SDK - protects against XSS)
-
 ### Refine.dev
 
 **Why:** Rapidly scaffold admin panels with built-in CRUD operations, forms, tables, and routing. Saves weeks of development time on admin interfaces.
@@ -156,7 +114,7 @@ type Auth {
 **How it works in this monorepo:**
 1. **Configure resources** (Clinic, Treatment, etc.) in Refine's `<Refine>` component
 2. **Custom data provider** in `apps/backoffice/src/lib/data-provider.ts` translates Refine actions to tRPC calls
-3. **Custom auth provider** in `apps/backoffice/src/lib/auth-provider.ts` integrates SlashID
+3. **Custom auth provider** in `apps/backoffice/src/lib/auth-provider.ts` handles authentication
 4. **Create pages** for each resource using Refine hooks (`useList`, `useOne`, `useCreate`, etc.)
 5. Refine handles loading states, error handling, and optimistic updates
 
@@ -186,36 +144,6 @@ resources={[
 5. **Import from `@acme/db`** in apps to get the enhanced, type-safe client
 
 **Database:** CockroachDB (PostgreSQL-compatible)
-
-### React Query (TanStack Query)
-
-**Why:** Manages server state with caching, refetching, and optimistic updates. tRPC uses it under the hood for all data fetching.
-
-**How it works in this monorepo:**
-- tRPC React client wraps React Query
-- Automatic query deduplication and caching
-- Background refetching keeps data fresh
-- Configurable stale time and cache time
-- Mutations with optimistic updates
-
-### Biome
-
-**Why:** Fast, unified linter and formatter that replaces ESLint + Prettier. Written in Rust for speed.
-
-**Configuration (`biome.json`):**
-- 4-space indentation (tabs for accessibility)
-- 120 character line width
-- Recommended lint rules + React/Next.js rules
-- Auto-organize imports
-
-### Knip
-
-**Why:** Detects unused files, exports, and dependencies to keep the codebase clean.
-
-**Usage:**
-```bash
-pnpm check:unused
-```
 
 ---
 
@@ -632,18 +560,9 @@ Edit `packages/auth/src/types.ts`:
 export type UserRole = 'USER' | 'ADMIN' | 'SUPPORT' | 'MANAGER'
 ```
 
-#### Step 2: Map SlashID group to role
+#### Step 2: Update role mapping
 
-Edit `packages/auth/src/session.ts`:
-
-```typescript
-function deriveRoleFromGroups(groups: string[]): UserRole {
-  if (groups.includes("internal_users")) return "ADMIN"
-  if (groups.includes("support_users")) return "SUPPORT"
-  if (groups.includes("managers")) return "MANAGER"
-  return "USER"
-}
-```
+Edit `packages/auth/src/session.ts` to map user groups to the new role.
 
 #### Step 3: Add ZenStack policies
 
@@ -697,28 +616,13 @@ export const managerProcedure = authedProcedure.use(
 
 ### Roles
 
-| Role | SlashID Group | Permissions |
-|------|---------------|-------------|
-| ADMIN | `internal_users` | Full CRUD on all resources |
-| USER | (default) | Read-only access |
-| SUPPORT | (future) | TBD |
+| Role | Permissions |
+|------|-------------|
+| ADMIN | Full CRUD on all resources |
+| USER | Read-only access |
+| SUPPORT | TBD |
 
-### Authorization Flow
-
-```
-1. User visits /login
-2. Enters email in SlashID form
-3. Receives magic link via email
-4. Clicks link → JWT issued
-5. JWT stored in HTTP-only cookie
-       ↓
-6. API request includes cookie
-7. TrpcMiddleware extracts token
-8. verifyToken() validates with SlashID
-9. deriveRoleFromGroups() maps groups → role
-10. createDb(session) creates enhanced Prisma client
-11. ZenStack policies filter data based on role
-```
+Role mapping is configured in `packages/auth/src/session.ts`.
 
 ---
 
@@ -793,7 +697,7 @@ This happens when ZenStack generates types to `node_modules`. The fix is already
 
 ### Authentication not working
 
-- Verify `SLASHID_ORG_ID` and `NEXT_PUBLIC_SLASHID_ORG_ID` are set
+- Verify auth environment variables are set
 - Check cookie settings for local development
 - Ensure API and frontend are on compatible domains (for cookies)
 
@@ -805,9 +709,9 @@ This happens when ZenStack generates types to `node_modules`. The fix is already
 
 ### 403 Forbidden on mutations
 
-- Check that the user's SlashID groups include `internal_users` for admin access
-- Verify ZenStack policies allow the operation for the user's role
-- Check the `deriveRoleFromGroups` function for correct group mapping
+- Verify the user has the required role (e.g., ADMIN)
+- Check ZenStack policies allow the operation for the user's role
+- Verify role mapping in `packages/auth/src/session.ts`
 
 ---
 
