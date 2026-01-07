@@ -1,23 +1,25 @@
-'use client'
+"use client";
 
-import { useSlashID } from '@slashid/react'
-import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
-import { Button } from '@/components/ui/button'
+import { useSlashID } from "@slashid/react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { Button, type ButtonProps } from "@/components/ui/button";
 
-export function LogoutButton() {
-	const { logOut } = useSlashID()
-	const router = useRouter()
-	const [pending, startTransition] = useTransition()
+type LogoutButtonProps = Pick<ButtonProps, "variant" | "size">;
 
-	const handleLogout = async () => {
-		await logOut()
-		startTransition(() => router.replace('/login'))
-	}
+export function LogoutButton({ variant = "outline", size }: LogoutButtonProps) {
+    const { logOut } = useSlashID();
+    const router = useRouter();
+    const [pending, startTransition] = useTransition();
 
-	return (
-		<Button onClick={handleLogout} disabled={pending} variant="outline">
-			{pending ? 'Signing out...' : 'Sign out'}
-		</Button>
-	)
+    const handleLogout = async () => {
+        await logOut();
+        startTransition(() => router.replace("/login"));
+    };
+
+    return (
+        <Button onClick={handleLogout} disabled={pending} variant={variant} size={size}>
+            {pending ? "Signing out..." : "Sign out"}
+        </Button>
+    );
 }
