@@ -26,7 +26,8 @@
       "Bash(npx zenstack:*)",
       "Bash(pnpm --filter @acme/test-app typecheck:*)",
       "Bash(curl:*)",
-      "Bash(pnpm --filter @acme/api remove dotenv)"
+      "Bash(pnpm --filter @acme/api remove dotenv)",
+      "Bash(dir:*)"
     ]
   }
 }
