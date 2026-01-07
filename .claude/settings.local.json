@@ -22,7 +22,9 @@
       "Bash(npm view:*)",
       "Bash(npx @refinedev/codemod@latest refine4-to-refine5:*)",
       "Bash(pnpm --filter @acme/backoffice dev:*)",
-      "Bash(timeout //T 2 //NOBREAK)"
+      "Bash(timeout //T 2 //NOBREAK)",
+      "Bash(npx zenstack:*)",
+      "Bash(pnpm --filter @acme/test-app typecheck:*)"
     ]
   }
 }

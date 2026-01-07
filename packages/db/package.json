@@ -9,10 +9,14 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./generated/*": {
+      "types": "./src/generated/*",
+      "default": "./src/generated/*"
     }
   },
   "scripts": {
-    "db:generate": "zenstack generate && prisma generate",
+    "db:generate": "zenstack generate --output ./src/generated && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { enhance } from '@zenstackhq/runtime'
+import { enhance, type Enhanced } from './generated/enhance'
 import type { SessionUser } from '@acme/auth'
 
 export { Prisma } from '@prisma/client'
@@ -42,4 +42,4 @@ export function createDb(session: SessionUser | null) {
   return enhance(prisma, { user: authContext })
 }
 
-export type EnhancedPrismaClient = ReturnType<typeof createDb>
+export type EnhancedPrismaClient = Enhanced<PrismaClient>
