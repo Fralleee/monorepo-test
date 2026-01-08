@@ -8,9 +8,10 @@
 		"typecheck": "turbo typecheck",
 		"lint": "turbo lint",
 		"format": "turbo format",
-		"db:generate": "turbo db:generate",
-		"db:migrate": "turbo db:migrate",
-		"db:push": "turbo db:push",
+		"db:generate": "pnpm --filter @acme/db db:generate",
+		"db:migrate": "pnpm --filter @acme/db db:migrate",
+		"db:push": "pnpm --filter @acme/db db:push",
+		"db:reset": "pnpm --filter @acme/db zenstack migrate reset",
 		"clean": "turbo clean && rm -rf node_modules",
 		"check:unused": "pnpm run check:unused:ci && knip"
 	},

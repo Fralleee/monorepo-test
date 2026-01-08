@@ -235,13 +235,15 @@ await publicDb.clinic.create({...}) // Throws - access denied
 
 ## Commands
 
+All database commands can be run from the monorepo root. Use `--` to pass additional arguments.
+
 ### Generate Client
 
 ```bash
-# From package directory
+# From monorepo root
 pnpm db:generate
 
-# Or from monorepo root
+# From package directory
 pnpm --filter @acme/db db:generate
 ```
 
@@ -249,15 +251,201 @@ This runs `zenstack generate` which generates:
 - `zenstack/schema.ts` - Schema class
 - `zenstack/models.ts` - TypeScript model types
 
-### Run Migrations
+### Push Schema (Development Only)
 
 ```bash
-# Create and apply migration
-pnpm db:migrate
-
-# Push schema without migration (dev only)
 pnpm db:push
 ```
+
+**What it does:**
+- Directly synchronizes the database schema with your `.zmodel` files
+- Does NOT create migration files
+- Preserves existing data when possible (may drop data for destructive changes)
+
+**When to use:**
+- Rapid prototyping during early development
+- Experimenting with schema changes locally
+- When you don't need migration history
+
+**When NOT to use:**
+- On production databases
+- When working on a feature branch that needs migrations for team review
+- After you've started using migrations on a branch
+
+### Create and Apply Migrations
+
+```bash
+# Create and apply migration with auto-generated name
+pnpm db:migrate
+
+# Create migration with custom name
+pnpm db:migrate -- --name add_patient_table
+```
+
+**What it does:**
+- Compares your `.zmodel` files to the last migration state
+- Generates a new migration file with SQL changes
+- Applies the migration to the database
+- Records the migration in the `_zenstack_migrations` table
+
+**When to use:**
+- Feature branches with schema changes
+- Any change that will be reviewed/merged
+- Production deployments
+
+### Reset Database
+
+```bash
+pnpm db:reset
+```
+
+**What it does:**
+- Drops all tables and data
+- Re-runs all migrations from scratch
+- Useful for getting a clean slate
+
+**Warning:** This destroys all data. Only use in development.
+
+## Migration Workflow
+
+### Feature Branch Workflow
+
+When implementing a feature that requires schema changes:
+
+```bash
+# 1. Create your feature branch
+git checkout -b feature/add-patients
+
+# 2. Make schema changes in .zmodel files
+# Edit zenstack/models/patient.zmodel
+
+# 3. Generate the client (for type checking)
+pnpm db:generate
+
+# 4. Create a migration with descriptive name
+pnpm db:migrate -- --name add_patient_model
+
+# 5. Commit both schema and migration files
+git add .
+git commit -m "feat: add patient model with migration"
+
+# 6. Push for review
+git push origin feature/add-patients
+```
+
+### Push vs Migrate Decision Tree
+
+```
+Is this production? ──Yes──> Use db:migrate
+       │
+       No
+       │
+Are you prototyping/experimenting? ──Yes──> Use db:push
+       │
+       No
+       │
+Will this be reviewed/merged? ──Yes──> Use db:migrate
+       │
+       No
+       │
+Does the team need migration history? ──Yes──> Use db:migrate
+       │
+       No
+       │
+Use db:push
+```
+
+### Handling Schema Drift
+
+**What is drift?**
+Schema drift occurs when the database state doesn't match the expected state from migrations. This commonly happens when:
+- You used `db:push` then switched to `db:migrate`
+- You manually modified the database
+- You switched branches with different migration histories
+
+**Symptoms:**
+```
+Error: The database schema has drifted from the migration history.
+```
+
+**How to fix:**
+
+1. **Option A: Reset the database (development only)**
+   ```bash
+   pnpm db:reset
+   ```
+   This drops everything and re-runs migrations.
+
+2. **Option B: Baseline the current state**
+   ```bash
+   # Mark current database state as the baseline
+   pnpm db:migrate -- --baseline
+   ```
+
+3. **Option C: Resolve manually**
+   - Compare database state to expected migration state
+   - Make targeted SQL fixes
+   - Re-run migrations
+
+### CI/CD Pipeline
+
+For deploying migrations in CI/CD:
+
+```yaml
+# Example GitHub Actions step
+- name: Run database migrations
+  run: pnpm db:migrate
+  env:
+    DATABASE_URL: ${{ secrets.DATABASE_URL }}
+```
+
+**Important:** Always run migrations before deploying application code.
+
+### Rolling Back Migrations
+
+ZenStack migrations are forward-only by default. To handle rollbacks:
+
+1. **Recommended: Create a new forward migration**
+   ```bash
+   # Instead of rolling back, create a migration that undoes the change
+   pnpm db:migrate -- --name revert_patient_email_change
+   ```
+
+2. **For emergencies: Manual rollback**
+   - Write reverse SQL manually
+   - Delete the migration record from `_zenstack_migrations`
+   - Apply reverse SQL
+
+### Best Practices
+
+1. **Always use migrations for shared work**
+   - Any schema change that will be committed should use `db:migrate`
+   - Include migration files in code review
+
+2. **Use descriptive migration names**
+   ```bash
+   pnpm db:migrate -- --name add_patient_phone_field
+   pnpm db:migrate -- --name create_appointments_table
+   pnpm db:migrate -- --name add_clinic_patient_index
+   ```
+
+3. **One logical change per migration**
+   - Don't bundle unrelated changes
+   - Makes it easier to understand and revert if needed
+
+4. **Test migrations on fresh database**
+   ```bash
+   # Reset and re-run all migrations to verify they work
+   pnpm db:reset
+   ```
+
+5. **Never edit committed migrations**
+   - Once pushed, a migration is immutable
+   - Create a new migration to fix issues
+
+6. **Coordinate with team**
+   - Communicate before making breaking schema changes
+   - Consider data migration needs for existing records
 
 ## Adding a New Model
 
