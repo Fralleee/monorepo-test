@@ -20,6 +20,7 @@
         "db:generate": "zenstack generate",
         "db:migrate": "zenstack migrate dev",
         "db:push": "zenstack db push",
+        "db:reset": "zenstack migrate reset",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
