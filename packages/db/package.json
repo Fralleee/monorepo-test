@@ -20,9 +20,7 @@
         "db:generate": "zenstack generate",
         "db:migrate": "zenstack migrate dev",
         "db:push": "zenstack db push",
-        "typecheck": "tsc --noEmit",
-        "lint": "biome check .",
-        "format": "biome format --write ."
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@acme/auth": "workspace:*",
