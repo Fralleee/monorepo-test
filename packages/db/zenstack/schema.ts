@@ -48,6 +48,12 @@ export class SchemaType implements SchemaDef {
                     type: "TreatmentsByClinic",
                     array: true,
                     relation: { opposite: "clinic" }
+                },
+                patients: {
+                    name: "patients",
+                    type: "Patient",
+                    array: true,
+                    relation: { opposite: "clinic" }
                 }
             },
             attributes: [
@@ -177,6 +183,63 @@ export class SchemaType implements SchemaDef {
                     type: "TreatmentsByClinic",
                     array: true,
                     relation: { opposite: "treatment" }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create,update,delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["role"]), "==", ExpressionUtils.literal("ADMIN")) }] }
+            ],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        Patient: {
+            name: "Patient",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("cuid") }] }],
+                    default: ExpressionUtils.call("cuid")
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                phone: {
+                    name: "phone",
+                    type: "String"
+                },
+                email: {
+                    name: "email",
+                    type: "String"
+                },
+                clinicId: {
+                    name: "clinicId",
+                    type: "String",
+                    foreignKeyFor: [
+                        "clinic"
+                    ]
+                },
+                clinic: {
+                    name: "clinic",
+                    type: "Clinic",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array([ExpressionUtils.field("clinicId")]) }, { name: "references", value: ExpressionUtils.array([ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }],
+                    relation: { opposite: "patients", fields: ["clinicId"], references: ["id"], onDelete: "Cascade" }
+                },
+                createdAt: {
+                    name: "createdAt",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }],
+                    default: ExpressionUtils.call("now")
+                },
+                updatedAt: {
+                    name: "updatedAt",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }]
                 }
             },
             attributes: [

@@ -10,4 +10,5 @@ import { type ModelResult as $ModelResult, type TypeDefResult as $TypeDefResult 
 export type Clinic = $ModelResult<$Schema, "Clinic">;
 export type TreatmentsByClinic = $ModelResult<$Schema, "TreatmentsByClinic">;
 export type Treatment = $ModelResult<$Schema, "Treatment">;
+export type Patient = $ModelResult<$Schema, "Patient">;
 export type Auth = $TypeDefResult<$Schema, "Auth">;

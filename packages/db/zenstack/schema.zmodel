@@ -1,6 +1,7 @@
 import './models/clinic'
 import './models/treatment'
 import './models/treatmentsByClinic'
+import './models/patient'
 
 datasource db {
   provider = "postgresql"  // CockroachDB is PostgreSQL-compatible

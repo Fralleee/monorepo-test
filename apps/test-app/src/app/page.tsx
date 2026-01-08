@@ -1,4 +1,4 @@
-import { ClinicsDisplay, TreatmentsDisplay } from "@/components/data-display";
+import { ClinicsDisplay, PatientsDisplay, TreatmentsDisplay } from "@/components/data-display";
 import { LogoutButton } from "@/components/logout-button";
 import { SessionInfo } from "@/components/session-info";
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,9 @@ export default async function HomePage() {
                     <h2 className="text-xl font-semibold">Data from API</h2>
                     <div className="grid gap-6 md:grid-cols-2">
                         <ClinicsDisplay />
+                        <PatientsDisplay />
+                    </div>
+                    <div className="grid gap-6">
                         <TreatmentsDisplay />
                     </div>
                 </div>

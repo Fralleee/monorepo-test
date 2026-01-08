@@ -1,7 +1,7 @@
 import type { DataProvider } from "@refinedev/core";
 import { trpcClient } from "./trpc";
 
-type ResourceName = "clinics" | "treatments" | "treatmentsByClinic";
+type ResourceName = "clinics" | "treatments" | "treatmentsByClinic" | "patients";
 
 export const dataProvider: DataProvider = {
     getList: async ({ resource }) => {
@@ -9,6 +9,7 @@ export const dataProvider: DataProvider = {
             clinics: () => trpcClient.clinic.list.query(),
             treatments: () => trpcClient.treatment.list.query(),
             treatmentsByClinic: () => trpcClient.treatmentsByClinic.list.query({}),
+            patients: () => trpcClient.patient.list.query({}),
         };
 
         const fetcher = resourceMap[resource as ResourceName];
@@ -30,6 +31,7 @@ export const dataProvider: DataProvider = {
             clinics: (id) => trpcClient.clinic.byId.query({ id }),
             treatments: (id) => trpcClient.treatment.byId.query({ id }),
             treatmentsByClinic: (id) => trpcClient.treatmentsByClinic.byId.query({ id }),
+            patients: (id) => trpcClient.patient.byId.query({ id }),
         };
 
         const fetcher = resourceMap[resource as ResourceName];
@@ -55,6 +57,10 @@ export const dataProvider: DataProvider = {
             treatmentsByClinic: (vars) =>
                 trpcClient.treatmentsByClinic.create.mutate(
                     vars as { clinicId: string; treatmentId: string; priceOverride?: number; notes?: string },
+                ),
+            patients: (vars) =>
+                trpcClient.patient.create.mutate(
+                    vars as { name: string; phone: string; email: string; clinicId: string },
                 ),
         };
 
@@ -91,6 +97,11 @@ export const dataProvider: DataProvider = {
                     id,
                     ...vars,
                 } as { id: string; priceOverride?: number | null; notes?: string | null }),
+            patients: (id, vars) =>
+                trpcClient.patient.update.mutate({
+                    id,
+                    ...vars,
+                } as { id: string; name?: string; phone?: string; email?: string; clinicId?: string }),
         };
 
         const updater = resourceMap[resource as ResourceName];
@@ -111,6 +122,7 @@ export const dataProvider: DataProvider = {
             clinics: (id) => trpcClient.clinic.delete.mutate({ id }),
             treatments: (id) => trpcClient.treatment.delete.mutate({ id }),
             treatmentsByClinic: (id) => trpcClient.treatmentsByClinic.delete.mutate({ id }),
+            patients: (id) => trpcClient.patient.delete.mutate({ id }),
         };
 
         const deleter = resourceMap[resource as ResourceName];

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSlashID } from "@slashid/react";
-import { Building2, Home, Link2, LogOut, Syringe } from "lucide-react";
+import { Building2, Home, Link2, LogOut, Syringe, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Clinics", href: "/clinics", icon: Building2 },
+    { name: "Patients", href: "/patients", icon: Users },
     { name: "Treatments", href: "/treatments", icon: Syringe },
     { name: "Clinic Treatments", href: "/treatments-by-clinic", icon: Link2 },
 ];

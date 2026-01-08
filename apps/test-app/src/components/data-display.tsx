@@ -6,12 +6,13 @@ import { trpc } from "@/lib/trpc";
 
 export function ClinicsDisplay() {
     const { data: clinics, isLoading, error } = trpc.clinic.list.useQuery();
+    const { selectedClinicId, setSelectedClinicId } = useClinic();
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Clinics</CardTitle>
-                <CardDescription>Loaded via tRPC from API</CardDescription>
+                <CardDescription>Click to select a clinic</CardDescription>
             </CardHeader>
             <CardContent>
                 {isLoading && <p className="text-sm text-muted-foreground">Loading clinics...</p>}
@@ -20,7 +21,17 @@ export function ClinicsDisplay() {
                 {clinics && clinics.length > 0 && (
                     <ul className="space-y-2">
                         {clinics.map((clinic) => (
-                            <li key={clinic.id} className="rounded border p-2 text-sm">
+                            <li
+                                key={clinic.id}
+                                className={`cursor-pointer rounded border p-2 text-sm transition-colors ${
+                                    selectedClinicId === clinic.id
+                                        ? "border-primary bg-primary/10"
+                                        : "hover:border-primary/50"
+                                }`}
+                                onClick={() =>
+                                    setSelectedClinicId(selectedClinicId === clinic.id ? null : clinic.id)
+                                }
+                            >
                                 <span className="font-medium">{clinic.name}</span>
                                 <span className="ml-2 text-muted-foreground">({clinic.code})</span>
                             </li>
@@ -128,6 +139,57 @@ export function TreatmentsDisplay() {
                                 </li>
                             );
                         })}
+                    </ul>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+export function PatientsDisplay() {
+    const { selectedClinicId } = useClinic();
+
+    const {
+        data: patients,
+        isLoading,
+        error,
+    } = trpc.patient.list.useQuery({ clinicId: selectedClinicId ?? "" }, { enabled: !!selectedClinicId });
+
+    if (!selectedClinicId) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Patients</CardTitle>
+                    <CardDescription>Select a clinic to view patients</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">No clinic selected</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Patients</CardTitle>
+                <CardDescription>Patients for selected clinic</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoading && <p className="text-sm text-muted-foreground">Loading patients...</p>}
+                {error && <p className="text-sm text-destructive">Error: {error.message}</p>}
+                {patients && patients.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No patients found for this clinic</p>
+                )}
+                {patients && patients.length > 0 && (
+                    <ul className="space-y-2">
+                        {patients.map((patient) => (
+                            <li key={patient.id} className="rounded border p-2 text-sm">
+                                <div className="font-medium">{patient.name}</div>
+                                <div className="text-xs text-muted-foreground">{patient.email}</div>
+                                <div className="text-xs text-muted-foreground">{patient.phone}</div>
+                            </li>
+                        ))}
                     </ul>
                 )}
             </CardContent>
