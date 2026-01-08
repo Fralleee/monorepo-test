@@ -1,8 +1,8 @@
 "use client";
 
 import "@slashid/react/style.css";
-import { authProvider } from "@/lib/refine-auth-provider";
-import { dataProvider } from "@/lib/refine-data-provider";
+import { authProvider } from "@/lib/auth-provider";
+import { dataProvider } from "@/lib/data-provider";
 import { trpc, trpcClient } from "@/lib/trpc";
 import { Refine } from "@refinedev/core";
 import routerProvider from "@refinedev/nextjs-router";
