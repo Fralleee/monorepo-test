@@ -1,14 +1,13 @@
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"  // CockroachDB is PostgreSQL-compatible
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+plugin policy {
+  provider = "@zenstackhq/plugin-policy"
 }
 
 // Virtual auth type - NOT stored in database
-// Represents the session context from SlashID
 type Auth {
   id String @id
   role String

@@ -10,31 +10,32 @@
             "types": "./src/index.ts",
             "default": "./src/index.ts"
         },
-        "./generated/*": {
-            "types": "./src/generated/*",
-            "default": "./src/generated/*"
+        "./zenstack/*": {
+            "types": "./zenstack/*",
+            "default": "./zenstack/*"
         }
     },
     "scripts": {
         "postinstall": "pnpm db:generate",
-        "db:generate": "zenstack generate --output ./src/generated && prisma generate",
-        "db:migrate": "prisma migrate dev",
-        "db:push": "prisma db push",
-        "db:studio": "prisma studio",
+        "db:generate": "zenstack generate",
+        "db:migrate": "zenstack migrate dev",
+        "db:push": "zenstack db push",
         "typecheck": "tsc --noEmit",
         "lint": "biome check .",
         "format": "biome format --write ."
     },
     "dependencies": {
         "@acme/auth": "workspace:*",
-        "@prisma/client": "^6.1.0",
-        "@zenstackhq/runtime": "^2.10.2"
+        "@zenstackhq/orm": "^3.1.1",
+        "@zenstackhq/plugin-policy": "^3.1.1",
+        "kysely": "^0.28.9",
+        "pg": "^8.13.1"
     },
     "devDependencies": {
         "@acme/config": "workspace:*",
         "@types/node": "^22.10.2",
-        "prisma": "^6.1.0",
-        "typescript": "^5.7.2",
-        "zenstack": "^2.10.2"
+        "@types/pg": "^8.11.10",
+        "@zenstackhq/cli": "^3.1.1",
+        "typescript": "^5.7.2"
     }
 }

@@ -2,8 +2,8 @@
     "extends": "@acme/config/tsconfig.base.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "."
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "zenstack/**/*"],
     "exclude": ["node_modules", "dist"]
 }

@@ -14,7 +14,7 @@ monorepo/
 ├── packages/
 │   ├── api-contract/     # tRPC router definitions and types
 │   ├── auth/             # SlashID authentication utilities
-│   ├── db/               # Prisma + ZenStack database layer
+│   ├── db/               # ZenStack ORM database layer
 │   └── config/           # Shared TypeScript configurations
 └── turbo.json            # Turborepo pipeline configuration
 ```
@@ -30,8 +30,7 @@ monorepo/
 | Frontend | [Next.js](https://nextjs.org/) | 15.1.3 | React framework with App Router |
 | UI Library | [React](https://react.dev/) | 19.0.0 | Component-based UI library |
 | Admin UI | [Refine.dev](https://refine.dev/) | 5.0.0 | React admin panel framework |
-| Database ORM | [Prisma](https://www.prisma.io/) | 6.1.0 | Type-safe database client |
-| Access Control | [ZenStack](https://zenstack.dev/) | 2.10.2 | Authorization layer for Prisma |
+| Database ORM | [ZenStack](https://zenstack.dev/) | 3.1.1 | Type-safe ORM with access control |
 | Authentication | [SlashID](https://slashid.dev/) | 3.29.6 | Passwordless authentication |
 | Data Fetching | [React Query](https://tanstack.com/query) | 5.62.8 | Server state management |
 | Styling | [Tailwind CSS](https://tailwindcss.com/) | 4.0.0 | Utility-first CSS framework |
@@ -58,7 +57,7 @@ monorepo/
 
 **Type flow:**
 ```
-ZenStack → Prisma Types → tRPC Router → AppRouter Type → Frontend Hooks
+ZenStack Schema → Generated Types → tRPC Router → AppRouter Type → Frontend Hooks
 ```
 
 **Example usage:**
@@ -76,12 +75,12 @@ const { data } = trpc.clinic.list.useQuery()  // data is Clinic[]
 
 ### ZenStack
 
-**Why:** Adds declarative access control policies directly in the schema, enforcing row-level security at the ORM level. Without it, you'd need to manually add permission checks to every query.
+**Why:** ZenStack v3 is a standalone ORM (built on Kysely) with declarative access control policies directly in the schema, enforcing row-level security at the ORM level. Without it, you'd need to manually add permission checks to every query.
 
 **How it works in this monorepo:**
-1. Define models and policies in `packages/db/schema.zmodel` using `@@allow`/`@@deny`
-2. Run `zenstack generate --output ./src/generated` to create enhanced Prisma client
-3. Export `createDb(session)` from `packages/db` that wraps Prisma with ZenStack
+1. Define models and policies in `packages/db/zenstack/schema.zmodel` using `@@allow`/`@@deny`
+2. Run `zenstack generate` to create the ORM client and types
+3. Export `createDb(session)` from `packages/db` that sets auth context via `$setAuth()`
 4. Pass session context when creating the database client
 5. All queries are automatically filtered by access policies
 
@@ -132,19 +131,6 @@ resources={[
 ]}
 ```
 
-### Prisma
-
-**Why:** Type-safe database client with migrations, auto-generated types, and excellent developer experience. Changes to the schema automatically update TypeScript types.
-
-**How it works in this monorepo:**
-1. **Schema defined** in `packages/db/schema.zmodel` (ZenStack extends Prisma syntax)
-2. **ZenStack generates** `prisma/schema.prisma` from the zmodel
-3. **Run `db:generate`** to generate both Prisma client and ZenStack enhance function
-4. **Run `db:migrate`** to apply schema changes to the database
-5. **Import from `@acme/db`** in apps to get the enhanced, type-safe client
-
-**Database:** CockroachDB (PostgreSQL-compatible)
-
 ---
 
 ## Getting Started
@@ -170,7 +156,7 @@ pnpm install
 cp .env.example .env
 # Edit .env with your values (see Environment Variables section)
 
-# Generate Prisma client and ZenStack types
+# Generate ZenStack ORM client and types
 pnpm db:generate
 
 # Apply database migrations
@@ -198,7 +184,7 @@ pnpm --filter @acme/test-app dev
 | `pnpm typecheck` | Run TypeScript type checking |
 | `pnpm lint` | Run Biome linting |
 | `pnpm format` | Format code with Biome |
-| `pnpm db:generate` | Generate Prisma client and ZenStack types |
+| `pnpm db:generate` | Generate ZenStack ORM client and types |
 | `pnpm db:migrate` | Apply database migrations |
 | `pnpm db:push` | Push schema changes without migration |
 | `pnpm check:unused` | Check for unused code with Knip |
@@ -257,7 +243,7 @@ Follow these steps to add a new model with full type safety from database to fro
 
 #### Step 1: Define the model in ZenStack schema
 
-Edit `packages/db/schema.zmodel`:
+Edit `packages/db/zenstack/schema.zmodel`:
 
 ```prisma
 model Patient {
@@ -290,7 +276,7 @@ model Clinic {
 #### Step 2: Generate types and apply migration
 
 ```bash
-# Generate Prisma client and ZenStack types
+# Generate ZenStack ORM client and types
 pnpm db:generate
 
 # Create and apply migration
@@ -299,10 +285,10 @@ pnpm db:migrate
 
 #### Step 3: Export the type from db package
 
-Edit `packages/db/src/index.ts`:
+Model types are automatically exported from the generated schema in `packages/db/zenstack/models.ts`. Update `packages/db/src/index.ts` to re-export the new type:
 
 ```typescript
-export type { Clinic, Treatment, TreatmentsByClinic, Patient } from '@prisma/client'
+export type { Clinic, Treatment, TreatmentsByClinic, Patient } from '../zenstack/models'
 ```
 
 #### Step 4: Create the tRPC router
@@ -566,7 +552,7 @@ Edit `packages/auth/src/session.ts` to map user groups to the new role.
 
 #### Step 3: Add ZenStack policies
 
-Edit `packages/db/schema.zmodel`:
+Edit `packages/db/zenstack/schema.zmodel`:
 
 ```prisma
 model SomeModel {
@@ -643,7 +629,7 @@ Role mapping is configured in `packages/auth/src/session.ts`.
 |---------|---------|
 | [@acme/api-contract](./packages/api-contract/README.md) | tRPC router definitions, procedures, and shared types |
 | [@acme/auth](./packages/auth/README.md) | SlashID integration, session management, role utilities |
-| [@acme/db](./packages/db/README.md) | Prisma schema, ZenStack policies, database client |
+| [@acme/db](./packages/db/README.md) | ZenStack ORM, schema, policies, database client |
 | [@acme/config](./packages/config/README.md) | Shared TypeScript configurations |
 
 ---
@@ -687,7 +673,7 @@ pnpm typecheck
 
 ### TS2742 errors about non-portable types
 
-This happens when ZenStack generates types to `node_modules`. The fix is already applied - types are generated to `packages/db/src/generated/`.
+This happens when ZenStack types are not accessible to dependent packages. The fix is already applied - types are generated to `packages/db/zenstack/` and exported via `package.json`.
 
 ### Database connection errors
 

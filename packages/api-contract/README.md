@@ -61,7 +61,7 @@ import type { EnhancedPrismaClient } from '@acme/db'
 
 export interface TRPCContext {
   session: SessionUser | null
-  db: EnhancedPrismaClient
+  db: EnhancedPrismaClient  // ZenStack client with auth context
 }
 ```
 
@@ -339,7 +339,7 @@ export type { AppRouter } from './router'
 ### Workspace Dependencies
 
 - `@acme/auth` - SessionUser type, UserRole type
-- `@acme/db` - EnhancedPrismaClient type
+- `@acme/db` - ZenStack database client type
 
 ### External Dependencies
 

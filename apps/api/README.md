@@ -16,7 +16,7 @@ This app serves as the backend for all frontend applications. It:
 - **HTTP Server**: Express (via `@nestjs/platform-express`)
 - **API Protocol**: tRPC 11.0.0-rc
 - **Authentication**: SlashID (via `@acme/auth`)
-- **Database**: Prisma + ZenStack (via `@acme/db`)
+- **Database**: ZenStack ORM (via `@acme/db`)
 - **Environment**: `@nestjs/config` for `.env` loading
 
 ## Project Structure
@@ -44,7 +44,7 @@ src/
        ↓
 4. Validate token with SlashID SSR
        ↓
-5. Create enhanced Prisma client with session context
+5. Create ZenStack client with session context
        ↓
 6. tRPC procedure executes with { session, db } context
        ↓

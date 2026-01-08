@@ -1,45 +1,61 @@
 import type { SessionUser } from "@acme/auth";
-import { PrismaClient } from "@prisma/client";
-import { type Enhanced, enhance } from "./generated/enhance";
+import type { ClientOptions } from "@zenstackhq/orm";
+import { ZenStackClient } from "@zenstackhq/orm";
+import { PostgresDialect } from "@zenstackhq/orm/dialects/postgres";
+import { PolicyPlugin } from "@zenstackhq/plugin-policy";
+import { Pool } from "pg";
+import { SchemaType } from "../zenstack/schema";
 
-export { Prisma } from "@prisma/client";
-export type { Clinic, Treatment, TreatmentsByClinic } from "@prisma/client";
+// Export types from generated schema
+export type { Clinic, Treatment, TreatmentsByClinic } from "../zenstack/models";
 
-// Global prisma instance for connection pooling
-const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined;
+// Create the schema instance
+const schema = new SchemaType();
+
+// Create a PostgreSQL connection pool
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
+
+// Create the dialect
+const dialect = new PostgresDialect({ pool });
+
+// Define client options with proper typing
+const clientOptions: ClientOptions<SchemaType> = {
+	dialect,
+	plugins: [new PolicyPlugin<SchemaType>()],
+	log: process.env.NODE_ENV === "development" ? ["query", "error"] : ["error"],
 };
 
-export const prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-        log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    });
+// Global client for connection pooling
+const globalForDb = globalThis as unknown as {
+	db: ReturnType<typeof createBaseClient> | undefined;
+};
+
+function createBaseClient() {
+	return new ZenStackClient(schema, clientOptions);
+}
+
+const baseClient = globalForDb.db ?? createBaseClient();
 
 if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
+	globalForDb.db = baseClient;
 }
-
-// ZenStack auth context type
-type AuthContext = {
-    id: string;
-    role: string;
-};
 
 /**
- * Creates a ZenStack-enhanced Prisma client with access control based on session
- * @param session - The authenticated user session from SlashID
- * @returns Enhanced Prisma client with row-level security
+ * Creates a ZenStack client with access control based on session
+ * @param session - The authenticated user session
+ * @returns ZenStack client with row-level security
  */
 export function createDb(session: SessionUser | null) {
-    const authContext: AuthContext | undefined = session
-        ? {
-              id: session.id,
-              role: session.role,
-          }
-        : undefined;
+	const authContext = session
+		? {
+				id: session.id,
+				role: session.role,
+			}
+		: undefined;
 
-    return enhance(prisma, { user: authContext });
+	return baseClient.$setAuth(authContext);
 }
 
-export type EnhancedPrismaClient = Enhanced<PrismaClient>;
+export type EnhancedPrismaClient = typeof baseClient;

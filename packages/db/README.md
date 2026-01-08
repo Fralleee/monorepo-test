@@ -1,32 +1,30 @@
 # @acme/db
 
-Prisma database client with ZenStack access control for the Acme CRM monorepo.
+ZenStack v3 ORM database layer with access control for the Acme CRM monorepo.
 
 ## Overview
 
 This package provides the database layer that:
 - Defines the database schema with ZenStack
-- Generates Prisma client with type safety
+- Generates type-safe ORM client (based on Kysely)
 - Enforces row-level security via ZenStack policies
-- Exports the enhanced database client
+- Exports the database client with auth context
 
 ## Tech Stack
 
-- **ORM**: Prisma 6.1.0
-- **Access Control**: ZenStack 2.10.2
-- **Database**: CockroachDB (PostgreSQL-compatible)
+- **ORM**: ZenStack 3.1.1 (standalone ORM based on Kysely)
+- **Database**: PostgreSQL (CockroachDB-compatible)
+- **Connection Pool**: pg (node-postgres)
 
 ## Project Structure
 
 ```
-├── schema.zmodel         # ZenStack schema (models + policies)
-├── prisma/
-│   └── schema.prisma     # Generated Prisma schema
+├── zenstack/
+│   ├── schema.zmodel     # ZenStack schema (models + policies)
+│   ├── schema.ts         # Generated schema class
+│   └── models.ts         # Generated model types
 ├── src/
-│   ├── index.ts          # Main exports
-│   └── generated/        # ZenStack generated files
-│       ├── enhance.ts    # Enhanced client wrapper
-│       └── ...           # Other generated files
+│   └── index.ts          # Main exports
 └── package.json
 ```
 
@@ -146,7 +144,7 @@ This type is not stored in the database but is used in policy expressions.
 
 ### createDb
 
-Creates an enhanced Prisma client with access policies:
+Creates a ZenStack client with auth context:
 
 ```typescript
 import { createDb } from '@acme/db'
@@ -163,30 +161,37 @@ const clinics = await db.clinic.findMany()
 **Implementation:**
 
 ```typescript
-import { PrismaClient } from '@prisma/client'
-import { enhance } from './generated/enhance'
-import type { SessionUser } from '@acme/auth'
+import { ZenStackClient } from '@zenstackhq/orm'
+import { PostgresDialect } from '@zenstackhq/orm/dialects/postgres'
+import { PolicyPlugin } from '@zenstackhq/plugin-policy'
+import { Pool } from 'pg'
+import { SchemaType } from '../zenstack/schema'
 
-const prisma = new PrismaClient()
+const schema = new SchemaType()
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const dialect = new PostgresDialect({ pool })
+
+const baseClient = new ZenStackClient(schema, {
+  dialect,
+  plugins: [new PolicyPlugin()],
+})
 
 export function createDb(session: SessionUser | null) {
-  return enhance(prisma, {
-    user: session ? { id: session.id, role: session.role } : undefined,
-  })
+  const authContext = session
+    ? { id: session.id, role: session.role }
+    : undefined
+  return baseClient.$setAuth(authContext)
 }
 ```
 
 ### Type Exports
 
 ```typescript
-// Prisma namespace for advanced usage
-export { Prisma } from '@prisma/client'
-
 // Model types
-export type { Clinic, Treatment, TreatmentsByClinic } from '@prisma/client'
+export type { Clinic, Treatment, TreatmentsByClinic } from '../zenstack/models'
 
 // Enhanced client type
-export type EnhancedPrismaClient = Enhanced<PrismaClient>
+export type EnhancedPrismaClient = typeof baseClient
 ```
 
 ## Usage
@@ -197,7 +202,7 @@ export type EnhancedPrismaClient = Enhanced<PrismaClient>
 // packages/api-contract/src/routers/clinic.ts
 export const clinicRouter = t.router({
   list: authedProcedure.query(async ({ ctx }) => {
-    // ctx.db is the enhanced client
+    // ctx.db is the ZenStack client with auth context
     return ctx.db.clinic.findMany({
       orderBy: { name: 'asc' },
     })
@@ -236,9 +241,9 @@ pnpm db:generate
 pnpm --filter @acme/db db:generate
 ```
 
-This runs:
-1. `zenstack generate --output ./src/generated` - Generates ZenStack enhance
-2. `prisma generate` - Generates Prisma client
+This runs `zenstack generate` which generates:
+- `zenstack/schema.ts` - Schema class
+- `zenstack/models.ts` - TypeScript model types
 
 ### Run Migrations
 
@@ -250,15 +255,9 @@ pnpm db:migrate
 pnpm db:push
 ```
 
-### Open Prisma Studio
-
-```bash
-pnpm db:studio
-```
-
 ## Adding a New Model
 
-### 1. Define in schema.zmodel
+### 1. Define in zenstack/schema.zmodel
 
 ```prisma
 model Patient {
@@ -297,7 +296,7 @@ pnpm db:migrate
 
 ```typescript
 // src/index.ts
-export type { Clinic, Treatment, TreatmentsByClinic, Patient } from '@prisma/client'
+export type { Clinic, Treatment, TreatmentsByClinic, Patient } from '../zenstack/models'
 ```
 
 ## Package Exports
@@ -305,20 +304,20 @@ export type { Clinic, Treatment, TreatmentsByClinic, Patient } from '@prisma/cli
 ### Main Export
 
 ```typescript
-// Database client
+// Database client factory
 export { createDb } from './index'
 
 // Types
-export { Prisma } from '@prisma/client'
-export type { Clinic, Treatment, TreatmentsByClinic } from '@prisma/client'
+export type { Clinic, Treatment, TreatmentsByClinic } from '../zenstack/models'
 export type { EnhancedPrismaClient } from './index'
 ```
 
-### Generated Export (`./generated/*`)
+### Generated Export (`./zenstack/*`)
 
 ```typescript
 // For direct access to generated types
-import { enhance } from '@acme/db/generated/enhance'
+import { SchemaType } from '@acme/db/zenstack/schema'
+import type { Clinic } from '@acme/db/zenstack/models'
 ```
 
 ## Configuration
@@ -332,19 +331,21 @@ import { enhance } from '@acme/db/generated/enhance'
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./generated/*": {
-      "types": "./src/generated/*",
-      "default": "./src/generated/*"
+    "./zenstack/*": {
+      "types": "./zenstack/*",
+      "default": "./zenstack/*"
     }
   }
 }
 ```
 
-### Why Custom Output Location?
+### Why ZenStack v3?
 
-ZenStack by default generates to `node_modules/.zenstack`. In a pnpm monorepo, this causes TS2742 errors because TypeScript cannot resolve types across the pnpm store.
-
-**Solution:** Generate to `./src/generated` and export via package.json.
+ZenStack v3 is a complete rewrite that replaces Prisma with its own standalone ORM based on Kysely:
+- **No Prisma dependency** - Lighter footprint, fewer moving parts
+- **Kysely-based** - Direct SQL generation with type safety
+- **Same schema syntax** - Models and policies still defined in `.zmodel` files
+- **Prisma-compatible API** - Query API is compatible with Prisma (findMany, create, etc.)
 
 ## Environment Variables
 
@@ -361,10 +362,11 @@ DATABASE_URL="postgresql://user:password@localhost:5432/acme?schema=public"
 
 ### External Dependencies
 
-- `@prisma/client` - Prisma ORM client
-- `prisma` - Prisma CLI (dev)
-- `zenstack` - ZenStack CLI (dev)
-- `@zenstackhq/runtime` - ZenStack runtime
+- `@zenstackhq/orm` - ZenStack ORM client
+- `@zenstackhq/plugin-policy` - Access control plugin
+- `@zenstackhq/cli` - ZenStack CLI (dev)
+- `kysely` - SQL query builder (peer dependency)
+- `pg` - PostgreSQL connection pool
 
 ### Workspace Dependencies
 

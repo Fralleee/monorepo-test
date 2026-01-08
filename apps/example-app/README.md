@@ -201,7 +201,7 @@ SlashID sets the cookie with:
 | **Dependencies** | Standalone | Uses workspace packages |
 | **Auth Package** | Direct SlashID | `@acme/auth` wrapper |
 | **Role Mapping** | None | Groups → Roles |
-| **Database** | None | Prisma + ZenStack |
+| **Database** | None | ZenStack ORM |
 
 ## Use Cases
 
