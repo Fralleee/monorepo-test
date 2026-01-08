@@ -9,37 +9,44 @@ import { SchemaType } from "../zenstack/schema";
 // Export types from generated schema
 export type { Clinic, Treatment, TreatmentsByClinic } from "../zenstack/models";
 
-// Create the schema instance
-const schema = new SchemaType();
+// Type for the ZenStack client instance
+type ZenStackClientInstance = InstanceType<typeof ZenStackClient<SchemaType>>;
 
-// Create a PostgreSQL connection pool
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
-
-// Create the dialect
-const dialect = new PostgresDialect({ pool });
-
-// Define client options with proper typing
-const clientOptions: ClientOptions<SchemaType> = {
-	dialect,
-	plugins: [new PolicyPlugin<SchemaType>()],
-	log: process.env.NODE_ENV === "development" ? ["query", "error"] : ["error"],
-};
-
-// Global client for connection pooling
+// Global client for connection pooling (lazy initialized)
 const globalForDb = globalThis as unknown as {
-	db: ReturnType<typeof createBaseClient> | undefined;
+	db: ZenStackClientInstance | undefined;
 };
 
-function createBaseClient() {
-	return new ZenStackClient(schema, clientOptions);
-}
+/**
+ * Lazily creates and returns the ZenStack client.
+ * This ensures DATABASE_URL is read after NestJS loads environment variables.
+ */
+function getBaseClient(): ZenStackClientInstance {
+	if (globalForDb.db) {
+		return globalForDb.db;
+	}
 
-const baseClient = globalForDb.db ?? createBaseClient();
+	const schema = new SchemaType();
 
-if (process.env.NODE_ENV !== "production") {
-	globalForDb.db = baseClient;
+	const pool = new Pool({
+		connectionString: process.env.DATABASE_URL,
+	});
+
+	const dialect = new PostgresDialect({ pool });
+
+	const clientOptions: ClientOptions<SchemaType> = {
+		dialect,
+		plugins: [new PolicyPlugin<SchemaType>()],
+		log: process.env.NODE_ENV === "development" ? ["query", "error"] : ["error"],
+	};
+
+	const client = new ZenStackClient(schema, clientOptions);
+
+	if (process.env.NODE_ENV !== "production") {
+		globalForDb.db = client;
+	}
+
+	return client;
 }
 
 /**
@@ -55,7 +62,7 @@ export function createDb(session: SessionUser | null) {
 			}
 		: undefined;
 
-	return baseClient.$setAuth(authContext);
+	return getBaseClient().$setAuth(authContext);
 }
 
-export type EnhancedClient = typeof baseClient;
+export type EnhancedClient = ZenStackClientInstance;
