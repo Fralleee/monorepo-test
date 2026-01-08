@@ -9,9 +9,7 @@
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
-        "typecheck": "tsc --noEmit",
-        "lint": "biome check .",
-        "format": "biome format --write ."
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@acme/api-contract": "workspace:*",

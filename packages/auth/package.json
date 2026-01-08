@@ -16,9 +16,7 @@
         }
     },
     "scripts": {
-        "typecheck": "tsc --noEmit",
-        "lint": "biome check .",
-        "format": "biome format --write ."
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@slashid/slashid": "^3.29.6"
