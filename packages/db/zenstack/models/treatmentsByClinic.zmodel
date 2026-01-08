@@ -1,0 +1,19 @@
+import 'clinic'
+import 'treatment'
+
+model TreatmentsByClinic {
+  id            String    @id @default(cuid())
+  clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId      String
+  treatment     Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+  treatmentId   String
+  priceOverride Decimal?  @db.Decimal(10, 2)
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([clinicId, treatmentId])
+
+  @@allow('read', auth() != null)
+  @@allow('create,update,delete', auth().role == 'ADMIN')
+}

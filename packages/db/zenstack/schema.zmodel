@@ -1,3 +1,7 @@
+import './models/clinic'
+import './models/treatment'
+import './models/treatmentsByClinic'
+
 datasource db {
   provider = "postgresql"  // CockroachDB is PostgreSQL-compatible
   url      = env("DATABASE_URL")
@@ -12,51 +16,4 @@ type Auth {
   id String @id
   role String
   @@auth
-}
-
-model Clinic {
-  id                  String               @id @default(cuid())
-  name                String
-  code                String               @unique
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  treatmentsByClinic  TreatmentsByClinic[]
-
-  // All authenticated users can read
-  @@allow('read', auth() != null)
-  // Only ADMIN can create, update, delete
-  @@allow('create,update,delete', auth().role == 'ADMIN')
-}
-
-model Treatment {
-  id                        String               @id @default(cuid())
-  name                      String
-  description               String?
-  price                     Decimal              @db.Decimal(10, 2)
-  maintenanceIntervalMonths Int?
-  createdAt                 DateTime             @default(now())
-  updatedAt                 DateTime             @updatedAt
-  treatmentsByClinic        TreatmentsByClinic[]
-
-  // All authenticated users can read
-  @@allow('read', auth() != null)
-  // Only ADMIN can create, update, delete
-  @@allow('create,update,delete', auth().role == 'ADMIN')
-}
-
-model TreatmentsByClinic {
-  id            String    @id @default(cuid())
-  clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  clinicId      String
-  treatment     Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
-  treatmentId   String
-  priceOverride Decimal?  @db.Decimal(10, 2)
-  notes         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@unique([clinicId, treatmentId])
-
-  @@allow('read', auth() != null)
-  @@allow('create,update,delete', auth().role == 'ADMIN')
 }

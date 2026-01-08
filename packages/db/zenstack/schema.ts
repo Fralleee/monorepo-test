@@ -60,63 +60,6 @@ export class SchemaType implements SchemaDef {
                 code: { type: "String" }
             }
         },
-        Treatment: {
-            name: "Treatment",
-            fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    id: true,
-                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("cuid") }] }],
-                    default: ExpressionUtils.call("cuid")
-                },
-                name: {
-                    name: "name",
-                    type: "String"
-                },
-                description: {
-                    name: "description",
-                    type: "String",
-                    optional: true
-                },
-                price: {
-                    name: "price",
-                    type: "Decimal",
-                    attributes: [{ name: "@db.Decimal", args: [{ name: "p", value: ExpressionUtils.literal(10) }, { name: "s", value: ExpressionUtils.literal(2) }] }]
-                },
-                maintenanceIntervalMonths: {
-                    name: "maintenanceIntervalMonths",
-                    type: "Int",
-                    optional: true
-                },
-                createdAt: {
-                    name: "createdAt",
-                    type: "DateTime",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }],
-                    default: ExpressionUtils.call("now")
-                },
-                updatedAt: {
-                    name: "updatedAt",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }]
-                },
-                treatmentsByClinic: {
-                    name: "treatmentsByClinic",
-                    type: "TreatmentsByClinic",
-                    array: true,
-                    relation: { opposite: "treatment" }
-                }
-            },
-            attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create,update,delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["role"]), "==", ExpressionUtils.literal("ADMIN")) }] }
-            ],
-            idFields: ["id"],
-            uniqueFields: {
-                id: { type: "String" }
-            }
-        },
         TreatmentsByClinic: {
             name: "TreatmentsByClinic",
             fields: {
@@ -186,6 +129,63 @@ export class SchemaType implements SchemaDef {
             uniqueFields: {
                 id: { type: "String" },
                 clinicId_treatmentId: { clinicId: { type: "String" }, treatmentId: { type: "String" } }
+            }
+        },
+        Treatment: {
+            name: "Treatment",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("cuid") }] }],
+                    default: ExpressionUtils.call("cuid")
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                description: {
+                    name: "description",
+                    type: "String",
+                    optional: true
+                },
+                price: {
+                    name: "price",
+                    type: "Decimal",
+                    attributes: [{ name: "@db.Decimal", args: [{ name: "p", value: ExpressionUtils.literal(10) }, { name: "s", value: ExpressionUtils.literal(2) }] }]
+                },
+                maintenanceIntervalMonths: {
+                    name: "maintenanceIntervalMonths",
+                    type: "Int",
+                    optional: true
+                },
+                createdAt: {
+                    name: "createdAt",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }],
+                    default: ExpressionUtils.call("now")
+                },
+                updatedAt: {
+                    name: "updatedAt",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }]
+                },
+                treatmentsByClinic: {
+                    name: "treatmentsByClinic",
+                    type: "TreatmentsByClinic",
+                    array: true,
+                    relation: { opposite: "treatment" }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create,update,delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["role"]), "==", ExpressionUtils.literal("ADMIN")) }] }
+            ],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
             }
         }
     } as const;
