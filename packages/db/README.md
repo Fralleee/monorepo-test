@@ -13,14 +13,18 @@ This package provides the database layer that:
 ## Tech Stack
 
 - **ORM**: ZenStack 3.1.1 (standalone ORM based on Kysely)
-- **Database**: PostgreSQL (CockroachDB-compatible)
+- **Database**: PostgreSQL
 - **Connection Pool**: pg (node-postgres)
 
 ## Project Structure
 
 ```
 ├── zenstack/
-│   ├── schema.zmodel     # ZenStack schema (models + policies)
+│   ├── schema.zmodel     # Main schema (imports models, config, auth type)
+│   ├── models/           # Model definitions (one file per model)
+│   │   ├── clinic.zmodel
+│   │   ├── treatment.zmodel
+│   │   └── treatmentsByClinic.zmodel
 │   ├── schema.ts         # Generated schema class
 │   └── models.ts         # Generated model types
 ├── src/
@@ -257,9 +261,13 @@ pnpm db:push
 
 ## Adding a New Model
 
-### 1. Define in zenstack/schema.zmodel
+### 1. Create a new model file
+
+Create `zenstack/models/patient.zmodel`:
 
 ```prisma
+import 'clinic'
+
 model Patient {
   id        String   @id @default(cuid())
   name      String
@@ -276,23 +284,39 @@ model Patient {
 }
 ```
 
-### 2. Add Reverse Relation
+### 2. Import in schema.zmodel
+
+Add the import to `zenstack/schema.zmodel`:
 
 ```prisma
+import './models/clinic'
+import './models/treatment'
+import './models/treatmentsByClinic'
+import './models/patient'  // Add this
+```
+
+### 3. Add Reverse Relation
+
+Update `zenstack/models/clinic.zmodel` to add the reverse relation:
+
+```prisma
+import 'treatmentsByClinic'
+import 'patient'  // Add this import
+
 model Clinic {
   // ... existing fields
   patients Patient[]
 }
 ```
 
-### 3. Generate and Migrate
+### 4. Generate and Migrate
 
 ```bash
 pnpm db:generate
 pnpm db:migrate
 ```
 
-### 4. Export Type
+### 5. Export Type
 
 ```typescript
 // src/index.ts

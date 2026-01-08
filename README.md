@@ -139,7 +139,7 @@ resources={[
 
 - Node.js 20+
 - pnpm 9.15+
-- PostgreSQL or CockroachDB instance
+- PostgreSQL instance
 - SlashID account (for authentication)
 
 ### Installation
@@ -226,7 +226,7 @@ NODE_ENV=development
 
 | Variable | Description | Used In |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL/CockroachDB connection string | packages/db, apps/api |
+| `DATABASE_URL` | PostgreSQL connection string | packages/db, apps/api |
 | `SLASHID_ORG_ID` | SlashID organization ID (server-side) | apps/api, packages/auth |
 | `NEXT_PUBLIC_SLASHID_ORG_ID` | SlashID org ID (client-side) | apps/test-app, apps/backoffice |
 | `SESSION_COOKIE_SECRET` | Secret for session signing (32+ chars) | packages/auth |
@@ -241,11 +241,13 @@ NODE_ENV=development
 
 Follow these steps to add a new model with full type safety from database to frontend.
 
-#### Step 1: Define the model in ZenStack schema
+#### Step 1: Create a new model file
 
-Edit `packages/db/zenstack/schema.zmodel`:
+Create `packages/db/zenstack/models/patient.zmodel`:
 
 ```prisma
+import 'clinic'
+
 model Patient {
   id        String   @id @default(cuid())
   name      String
@@ -264,9 +266,17 @@ model Patient {
 }
 ```
 
-Don't forget to add the reverse relation to the related model:
+Then import it in `packages/db/zenstack/schema.zmodel`:
 
 ```prisma
+import './models/patient'  // Add this line
+```
+
+Don't forget to add the reverse relation in `packages/db/zenstack/models/clinic.zmodel`:
+
+```prisma
+import 'patient'  // Add this import
+
 model Clinic {
   // ... existing fields
   patients  Patient[]
@@ -552,7 +562,7 @@ Edit `packages/auth/src/session.ts` to map user groups to the new role.
 
 #### Step 3: Add ZenStack policies
 
-Edit `packages/db/zenstack/schema.zmodel`:
+Edit the model's `.zmodel` file in `packages/db/zenstack/models/`:
 
 ```prisma
 model SomeModel {
