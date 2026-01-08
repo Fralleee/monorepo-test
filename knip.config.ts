@@ -12,7 +12,7 @@ const config: KnipConfig = {
 		types: 'error',
 		binaries: 'off',
 	},
-	ignoreDependencies: ['lefthook', 'posthog-node', '@biomejs/biome'],
+	ignoreDependencies: ['lefthook', 'posthog-node', '@biomejs/biome', 'ts-loader', 'webpack'],
 	typescript: true,
 }
 
