@@ -191,7 +191,7 @@ export function createDb(session: SessionUser | null) {
 export type { Clinic, Treatment, TreatmentsByClinic } from '../zenstack/models'
 
 // Enhanced client type
-export type EnhancedPrismaClient = typeof baseClient
+export type EnhancedClient = typeof baseClient
 ```
 
 ## Usage
@@ -309,7 +309,7 @@ export { createDb } from './index'
 
 // Types
 export type { Clinic, Treatment, TreatmentsByClinic } from '../zenstack/models'
-export type { EnhancedPrismaClient } from './index'
+export type { EnhancedClient } from './index'
 ```
 
 ### Generated Export (`./zenstack/*`)

@@ -1,14 +1,14 @@
 import type { SessionUser } from "@acme/auth";
-import type { EnhancedPrismaClient } from "@acme/db";
+import type { EnhancedClient } from "@acme/db";
 
 export type TRPCContext = {
     session: SessionUser | null;
-    db: EnhancedPrismaClient;
+    db: EnhancedClient;
 };
 
-export type CreateContextOptions = {
+type CreateContextOptions = {
     session: SessionUser | null;
-    db: EnhancedPrismaClient;
+    db: EnhancedClient;
 };
 
 export function createTRPCContext(opts: CreateContextOptions): TRPCContext {

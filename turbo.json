@@ -22,7 +22,7 @@
     },
     "db:generate": {
       "cache": false,
-      "outputs": ["node_modules/.prisma/**", "src/generated/**"]
+      "outputs": ["src/generated/**"]
     },
     "db:migrate": {
       "cache": false

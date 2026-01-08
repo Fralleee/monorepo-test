@@ -57,11 +57,11 @@ The context is passed to every procedure:
 ```typescript
 // src/context.ts
 import type { SessionUser } from '@acme/auth'
-import type { EnhancedPrismaClient } from '@acme/db'
+import type { EnhancedClient } from '@acme/db'
 
 export interface TRPCContext {
   session: SessionUser | null
-  db: EnhancedPrismaClient  // ZenStack client with auth context
+  db: EnhancedClient  // ZenStack client with auth context
 }
 ```
 

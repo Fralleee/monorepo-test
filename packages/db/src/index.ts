@@ -58,4 +58,4 @@ export function createDb(session: SessionUser | null) {
 	return baseClient.$setAuth(authContext);
 }
 
-export type EnhancedPrismaClient = typeof baseClient;
+export type EnhancedClient = typeof baseClient;
