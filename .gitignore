@@ -40,10 +40,6 @@ yarn-error.log*
 .vercel
 .amplify/
 
-# Prisma / ZenStack
-**/prisma/*.db
-**/prisma/*.db-journal
-
 # Misc
 .DS_Store
 *.pem
