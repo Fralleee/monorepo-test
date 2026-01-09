@@ -10,7 +10,7 @@ export function ClinicsDisplay() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Clinics</CardTitle>
+                <CardTitle>Clinics and shit</CardTitle>
                 <CardDescription>Loaded via tRPC from API</CardDescription>
             </CardHeader>
             <CardContent>
