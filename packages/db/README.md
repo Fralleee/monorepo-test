@@ -291,7 +291,23 @@ pnpm db:migrate -- --name add_patient_table
 **When to use:**
 - Feature branches with schema changes
 - Any change that will be reviewed/merged
+- Local development
+
+### Deploy Migrations (CI/CD)
+
+```bash
+pnpm db:migrate:deploy
+```
+
+**What it does:**
+- Applies all pending migration files to the database
+- Does NOT generate new migrations
+- Only runs migrations that are committed to the repository
+
+**When to use:**
+- CI/CD pipelines
 - Production deployments
+- Any environment where you want deterministic migrations
 
 ### Reset Database
 
@@ -336,9 +352,9 @@ git push origin feature/add-patients
 ### Push vs Migrate Decision Tree
 
 ```
-Is this production? ──Yes──> Use db:migrate
+Is this CI/CD or production? ──Yes──> Use db:migrate:deploy
        │
-       No
+       No (local development)
        │
 Are you prototyping/experimenting? ──Yes──> Use db:push
        │
@@ -348,12 +364,14 @@ Will this be reviewed/merged? ──Yes──> Use db:migrate
        │
        No
        │
-Does the team need migration history? ──Yes──> Use db:migrate
-       │
-       No
-       │
 Use db:push
 ```
+
+| Command | Environment | What it does |
+|---------|-------------|--------------|
+| `db:push` | Local prototyping | Syncs schema directly, no migration files |
+| `db:migrate` | Local development | Generates AND applies migration files |
+| `db:migrate:deploy` | CI/CD, production | Applies only committed migration files |
 
 ### Handling Schema Drift
 
