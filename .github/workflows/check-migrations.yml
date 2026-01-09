@@ -1,0 +1,36 @@
+name: Check Migration Required
+
+on:
+  pull_request:
+    paths:
+      - 'packages/db/zenstack/**/*.zmodel'
+
+jobs:
+  check-migration:
+    name: Verify migration file included
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for migration file
+        run: |
+          # Get list of changed files in PR
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          # Check if any zmodel files changed
+          ZMODEL_CHANGED=$(echo "$CHANGED_FILES" | grep -c '\.zmodel$' || true)
+
+          # Check if any migration files were added
+          MIGRATION_ADDED=$(echo "$CHANGED_FILES" | grep -c 'packages/db/prisma/migrations/' || true)
+
+          if [ "$ZMODEL_CHANGED" -gt 0 ] && [ "$MIGRATION_ADDED" -eq 0 ]; then
+            echo "❌ Schema files (.zmodel) were changed but no migration file was added."
+            echo ""
+            echo "Please run: pnpm db:migrate -- --name <description>"
+            echo "Then commit the generated migration file."
+            exit 1
+          fi
+
+          echo "✅ Migration check passed"
