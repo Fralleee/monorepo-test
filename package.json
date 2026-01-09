@@ -10,6 +10,7 @@
 		"format": "turbo format",
 		"db:generate": "pnpm --filter @acme/db db:generate",
 		"db:migrate": "pnpm --filter @acme/db db:migrate",
+		"db:migrate:deploy": "pnpm --filter @acme/db db:migrate:deploy",
 		"db:push": "pnpm --filter @acme/db db:push",
 		"db:reset": "pnpm --filter @acme/db db:reset",
 		"clean": "turbo clean && rm -rf node_modules",
