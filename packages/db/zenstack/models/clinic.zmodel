@@ -6,6 +6,7 @@ model Clinic {
   code                String               @unique
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime             @default(now())
   treatmentsByClinic  TreatmentsByClinic[]
 
   // All authenticated users can read
