@@ -407,32 +407,47 @@ Error: The database schema has drifted from the migration history.
 
 ### CI/CD Pipeline
 
-For deploying migrations in CI/CD:
+For deploying migrations in CI/CD, use `db:migrate:deploy` (not `db:migrate`):
 
 ```yaml
 # Example GitHub Actions step
 - name: Run database migrations
-  run: pnpm db:migrate
+  run: pnpm db:migrate:deploy
   env:
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 ```
+
+| Command | Use Case |
+|---------|----------|
+| `db:migrate` | Local development - generates AND applies migrations |
+| `db:migrate:deploy` | CI/CD - applies only committed migration files |
+
+Using `migrate:deploy` ensures deterministic deployments where the exact same SQL runs every time.
 
 **Important:** Always run migrations before deploying application code.
 
 ### Rolling Back Migrations
 
-ZenStack migrations are forward-only by default. To handle rollbacks:
+To rollback a migration, create a revert PR that generates a new forward migration:
 
-1. **Recommended: Create a new forward migration**
-   ```bash
-   # Instead of rolling back, create a migration that undoes the change
-   pnpm db:migrate -- --name revert_patient_email_change
-   ```
+```bash
+# 1. Revert the problematic commit
+git revert <commit-sha>
 
-2. **For emergencies: Manual rollback**
-   - Write reverse SQL manually
-   - Delete the migration record from `_zenstack_migrations`
-   - Apply reverse SQL
+# 2. Generate a new migration for the reverted schema
+pnpm db:migrate -- --name revert_<description>
+
+# 3. Commit both the reverted code AND the new migration file
+git add .
+git commit -m "Revert: <description>"
+
+# 4. Push and merge the revert PR
+git push
+```
+
+When the revert PR is merged, CI runs `migrate:deploy` which applies the rollback migration.
+
+**Note:** If the original migration dropped a column or table, the data cannot be recovered. The rollback will recreate the structure but the data is lost.
 
 ### Best Practices
 
