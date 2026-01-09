@@ -19,6 +19,7 @@
         "postinstall": "pnpm db:generate",
         "db:generate": "zenstack generate",
         "db:migrate": "zenstack migrate dev",
+        "db:migrate:deploy": "zenstack migrate deploy",
         "db:push": "zenstack db push",
         "db:reset": "zenstack migrate reset",
         "typecheck": "tsc --noEmit"
