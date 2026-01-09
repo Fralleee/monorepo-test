@@ -43,6 +43,12 @@ export class SchemaType implements SchemaDef {
                     updatedAt: true,
                     attributes: [{ name: "@updatedAt" }]
                 },
+                deletedAt: {
+                    name: "deletedAt",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }],
+                    default: ExpressionUtils.call("now")
+                },
                 treatmentsByClinic: {
                     name: "treatmentsByClinic",
                     type: "TreatmentsByClinic",
